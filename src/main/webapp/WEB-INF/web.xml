@@ -12,6 +12,15 @@
         <servlet-name>Feed</servlet-name>
         <url-pattern>/feed/*</url-pattern>
     </servlet-mapping>
+    
+     <servlet>
+        <servlet-name>RSS</servlet-name>
+        <servlet-class>com.tacs13G6.servlets.RssServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>RSS</servlet-name>
+        <url-pattern>/rss/*</url-pattern>
+    </servlet-mapping>
     <servlet>
         <servlet-name>GaeTest</servlet-name>
         <servlet-class>com.tacs13G6.GaeTestServlet</servlet-class>
