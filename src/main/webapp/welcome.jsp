@@ -56,7 +56,6 @@
 	
 	/* queda */
 	.navbar .nav li a {
-		font-weight: bold;
 		text-align: center;
 		border-left: 1px solid rgba(255, 255, 255, .75);
 		border-right: 1px solid rgba(0, 0, 0, .1);
