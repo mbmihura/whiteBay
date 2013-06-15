@@ -51,26 +51,20 @@
     
 	/* Customize the navbar links to be fill the entire space of the .navbar */
 	.navbar .navbar-inner {
-		padding-left: 20px;
+		padding-right: 0px;
 	}
 	
 	/* queda */
 	.navbar .nav li a {
 		text-align: center;
+
+	}
+	
+	/* queda */
+	#mainNav .navbar .nav li:first-child a {
 		border-left: 1px solid rgba(255, 255, 255, .75);
-		border-right: 1px solid rgba(0, 0, 0, .1);
 	}
 	
-	/* queda */
-	.navbar .nav li:first-child a {
-		border-left: 0;
-	}
-	
-	/* queda */
-	.navbar .nav li:last-child a {
-		border-right: 0;
-		border-radius: 0 3px 3px 0;
-	}
 	
 	/* No Feeds Message: */
 	.jumbotron {
@@ -114,46 +108,26 @@
 	              <span class="icon-bar"></span>
 	              <span class="icon-bar"></span>
 	            </button>
-	            <a class="brand" href="#">Project name</a>
+	            <a class="brand" style="border-right: 1px solid rgba(0, 0, 0, .1);" href="#">username</a>
 	            <!-- Responsive Navbar Part 2: Place all navbar contents you want collapsed withing .navbar-collapse.collapse. -->
 	            <div class="nav-collapse collapse">
-	              <ul class="nav">
-	                <li class="active"><a href="#">Home</a></li>
-	                <li><a href="#about">About</a></li>
-	                <li><a href="#contact">Contact</a></li>
+	              <ul id="mainNav" class="nav">
+	                <li data-showview="#userFeedsView" class="active"><a href="#">Your feeds</a></li>
+	                <li data-showview="#addFeedView"><a href="#">Create feed</a></li>
+	                <li data-showview="#addTorrentView"><a href="#">Add torrent</a></li>
+	              </ul>
+	              <ul class="nav" style="float: right;margin: 0;border-left: 0px;">
 	                <!-- Read about Bootstrap dropdowns at http://twitter.github.com/bootstrap/javascript.html#dropdowns -->
 	                <li class="dropdown">
-	                  <a href="#" class="dropdown-toggle" data-toggle="dropdown">Dropdown <b class="caret"></b></a>
+	                  <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-cog"></i><b class="caret"></b></a>
 	                  <ul class="dropdown-menu">
-	                    <li><a href="#">Action</a></li>
-	                    <li><a href="#">Another action</a></li>
-	                    <li><a href="#">Something else here</a></li>
-	                    <li class="divider"></li>
-	                    <li class="nav-header">Nav header</li>
-	                    <li><a href="#">Separated link</a></li>
-	                    <li><a href="#">One more separated link</a></li>
+	                    <li><a href="#">SignOut</a></li>
 	                  </ul>
 	                </li>
 	              </ul>
 	            </div><!--/.nav-collapse -->
 	          </div><!-- /.navbar-inner -->
 	        </div>
-        
-			<!-- Navigation Bar OLD-->
-			<div class="navbar" style="display:none">
-				<div class="navbar-inner">
-					<div class="container">
-						<ul id="mainNav" class="nav">
-							<li class="active" data-showview="#userFeedsView"><a
-								href="#">Your Feeds</a></li>
-							<li data-showview="#addFeedView"><a href="#">Create
-									Feed</a></li>
-							<li data-showview="#addTorrentView"><a href="#">Add
-									Torrent</a></li>
-						</ul>
-					</div>
-				</div>
-			</div>
 		</div>
 		<div id="mainAlert" class="alert text-center" style="display:none"></div>
 		<!-- User's Feeds List -->
