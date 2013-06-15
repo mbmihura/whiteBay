@@ -76,6 +76,9 @@
 		border-right: 0;
 		border-radius: 0 3px 3px 0;
 	}
+	.alert .text-center {
+		text-align: center
+	}
 	</style>
 	<link href="/assets/css/bootstrap-responsive.css" rel="stylesheet">
 </head>
@@ -100,7 +103,7 @@
 				</div>
 			</div>
 		</div>
-
+		<div id="mainAlert" class="alert text-center" style="display:none"></div>
 		<!-- User's Feeds List -->
 		<div id="userFeedsView">
 		<div id="noFeedMsg" class="jumbotron" style="display: none">
@@ -113,34 +116,40 @@
 			<div class="span4">
 				<h2>Private Feed:</h2>
 				<p>
-					torrent client url: <a>www.privatefeed.com</a>
+					Feed rss url: <a>utntcas.appspot.com/rss/23423</a>
 				</p>
 				<ul>
 					<li>torrent1</li>
 					<li>torrent1</li>
 				</ul>
 				<p>
-					<a class="btn" href="#">Share in Facebook! &raquo;</a>
+					<a class="btn" onclick="shareFeed('1')" href="#">Share in Facebook! &raquo;</a>
 				</p>
 			</div>
 			<div class="span4">
 				<h2>Feed 2</h2>
+				<p>
+					Feed rss url: <a>utntcas.appspot.com/rss/68747</a>
+				</p>
 				<ul>
 					<li>torrent1</li>
 					<li>torrent1</li>
 				</ul>
 				<p>
-					<a class="btn" href="#">Add torrent &raquo;</a>
+					<a class="btn" onclick="shareFeed('2')" href="#">Share in Facebook! &raquo;</a>
 				</p>
 			</div>
 			<div class="span4">
 				<h2>Feed 3</h2>
+				<p>
+					Feed rss url: <a>utntcas.appspot.com/rss/26523</a>
+				</p>
 				<ul>
 					<li>torrent1</li>
 					<li>torrent1</li>
 				</ul>
 				<p>
-					<a class="btn" href="#">Add torrent &raquo;</a>
+					<a class="btn" onclick="shareFeed('3')" href="#">Share in Facebook! &raquo;</a>
 				</p>
 			</div>
 		</div>
@@ -151,9 +160,21 @@
 			style="display: none">
 			<legend>New Feed</legend>
 			<div class="control-group">
-				<label class="control-label" for="nameInput">Name: </label>
+				<label class="control-label" for="titleInput">Title: </label>
 				<div class="controls">
-					<input type="text" id="nameInput" placeholder="feed's name...">
+					<input type="text" id="titleInput" placeholder="feed's title...">
+				</div>
+			</div>
+			<div class="control-group">
+				<label class="control-label" for="linkInput">Link: </label>
+				<div class="controls">
+					<input type="text" id="linkInput" placeholder="feed's link...">
+				</div>
+			</div>
+			<div class="control-group">
+				<label class="control-label" for="descInput">Description: </label>
+				<div class="controls">
+					<textarea rows="3" id="descInput" placeholder="feed's description..."></textarea>
 				</div>
 			</div>
 			<div class="control-group">
@@ -230,6 +251,32 @@
 			$("#addTorrentView").hide();
 			$(viewId).fadeIn();
 		}
+		function showAlert(msg,type){
+			$('#mainAlert').addClass(type).text(msg).show().delay(1200).fadeOut(1000,function() {
+				$('#mainAlert').removeClass(type);
+				});
+		}
+		function shareFeed(feedId)
+		{
+			$.ajax({
+				  url: '/feed/' + feedId + "/publish",
+				  type: 'POST'})
+				  .done(function() { showAlert("Feed shared!","alert-success"); })
+				  .fail(function() { showAlert("Feed couldn't be shared on facebook!","alert-error"); });
+		}
+		function createFeedCancel()
+		{
+		}
+		function createFeedExecute(feedId)
+		{
+		}
+		function addTorrentCancel()
+		{
+		}
+		function addTorrentExecute(feedId)
+		{
+		}
+		
 	</script>
 
 </body>
