@@ -17,22 +17,25 @@ import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 import javax.xml.transform.stream.StreamResult;
 
+import com.tacs13G6.models.exceptions.FeedMalformedException;
+import com.tacs13G6.models.exceptions.TorrentMalformedException;
+
 
 public class Feed {
 
           final String title;
           final String link;
           final String description;
-          final String language;
           final Date pubDate;
 
           final List<Torrent> torrents = new ArrayList<Torrent>();
 
-          public Feed(String title, String link, String description, String language, Date publicationDate) {
+          public Feed(String title, String link, String description, Date publicationDate) throws FeedMalformedException {
+        	  if (title == null || title.isEmpty() || description == null || description.isEmpty() || link == null || link.isEmpty())
+          		throw new FeedMalformedException("At least one of title or description is requiered");
             this.title = title;
             this.link = link;
             this.description = description;
-            this.language = language;
             this.pubDate = publicationDate;
           }
 
@@ -52,9 +55,6 @@ public class Feed {
             return description;
           }
 
-          public String getLanguage() {
-            return language;
-          }
 
           public Date getPubDate() {
             return pubDate;
@@ -63,7 +63,7 @@ public class Feed {
           @Override
           public String toString() {
             return "Feed [description=" + description
-                + ", language=" + language + ", link=" + link + ", pubDate="
+                +  ", link=" + link + ", pubDate="
                 + pubDate + ", title=" + title + "]";
           }
           
@@ -107,18 +107,16 @@ public class Feed {
 		    createNode(eventWriter, "link", this.getLink());
 	
 		    createNode(eventWriter, "description", this.getDescription());
-	
-		    createNode(eventWriter, "language", this.getLanguage());
-	
+		
 		    createNode(eventWriter, "pubdate", this.getPubDate().toString());
 	
 		    for (Torrent entry : this.getTorrents()) {
 		      eventWriter.add(eventFactory.createStartElement("", "", "item"));
 		      eventWriter.add(end);
 		      createNode(eventWriter, "title", entry.getTitle());
-		      createNode(eventWriter, "description", entry.getDescription());
+		      //createNode(eventWriter, "description", entry.getDescription());
 		      createNode(eventWriter, "link", entry.getLink());
-		      createNode(eventWriter, "guid", entry.getGuid());
+		      //createNode(eventWriter, "guid", entry.getGuid());
 		      eventWriter.add(end);
 		      eventWriter.add(eventFactory.createEndElement("", "", "item"));
 		      eventWriter.add(end);
