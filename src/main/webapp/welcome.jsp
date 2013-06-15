@@ -21,6 +21,57 @@
 	.container>hr {
 		margin: 60px 0;
 	}
+	/* Special class on .container surrounding .navbar, used for positioning it into place. */
+    .navbar-wrapper {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 10;
+      margin-top: 20px;
+      margin-bottom: -90px; /* Negative margin to pull up carousel. 90px is roughly margins and height of navbar. */
+    }
+    
+	/* Downsize the brand/project name a bit */
+    .navbar .brand {
+      padding-right: 20px;
+      font-size: 16px;
+      font-weight: bold;
+    }
+    
+    /* Navbar links: increase padding for taller navbar */
+    .navbar .nav > li > a {
+      padding-right: 20px;
+    }
+    
+    /* Offset the responsive button for proper vertical alignment */
+    .navbar .btn-navbar {
+      margin-top: 10px;
+    }
+    
+	/* Customize the navbar links to be fill the entire space of the .navbar */
+	.navbar .navbar-inner {
+		padding-left: 20px;
+	}
+	
+	/* queda */
+	.navbar .nav li a {
+		font-weight: bold;
+		text-align: center;
+		border-left: 1px solid rgba(255, 255, 255, .75);
+		border-right: 1px solid rgba(0, 0, 0, .1);
+	}
+	
+	/* queda */
+	.navbar .nav li:first-child a {
+		border-left: 0;
+	}
+	
+	/* queda */
+	.navbar .nav li:last-child a {
+		border-right: 0;
+		border-radius: 0 3px 3px 0;
+	}
 	
 	/* No Feeds Message: */
 	.jumbotron {
@@ -43,39 +94,7 @@
 		padding: 14px 24px;
 	}
 	
-	/* Customize the navbar links to be fill the entire space of the .navbar */
-	.navbar .navbar-inner {
-		padding: 0;
-	}
 	
-	.navbar .nav {
-		margin: 0;
-		display: table;
-		width: 100%;
-	}
-	
-	.navbar .nav li {
-		display: table-cell;
-		width: 1%;
-		float: none;
-	}
-	
-	.navbar .nav li a {
-		font-weight: bold;
-		text-align: center;
-		border-left: 1px solid rgba(255, 255, 255, .75);
-		border-right: 1px solid rgba(0, 0, 0, .1);
-	}
-	
-	.navbar .nav li:first-child a {
-		border-left: 0;
-		border-radius: 3px 0 0 3px;
-	}
-	
-	.navbar .nav li:last-child a {
-		border-right: 0;
-		border-radius: 0 3px 3px 0;
-	}
 	.alert .text-center {
 		text-align: center
 	}
@@ -87,8 +106,42 @@
 	<div class="container">
 		<div class="masthead">
 			<h3 class="muted">White Bay Social Torrents	Feeds</h3>
-			<!-- Navigation Bar -->
+			<!-- NNEWWW Navigation Bar -->
 			<div class="navbar">
+	          <div class="navbar-inner">
+	            <!-- Responsive Navbar Part 1: Button for triggering responsive navbar (not covered in tutorial). Include responsive CSS to utilize. -->
+	            <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+	              <span class="icon-bar"></span>
+	              <span class="icon-bar"></span>
+	              <span class="icon-bar"></span>
+	            </button>
+	            <a class="brand" href="#">Project name</a>
+	            <!-- Responsive Navbar Part 2: Place all navbar contents you want collapsed withing .navbar-collapse.collapse. -->
+	            <div class="nav-collapse collapse">
+	              <ul class="nav">
+	                <li class="active"><a href="#">Home</a></li>
+	                <li><a href="#about">About</a></li>
+	                <li><a href="#contact">Contact</a></li>
+	                <!-- Read about Bootstrap dropdowns at http://twitter.github.com/bootstrap/javascript.html#dropdowns -->
+	                <li class="dropdown">
+	                  <a href="#" class="dropdown-toggle" data-toggle="dropdown">Dropdown <b class="caret"></b></a>
+	                  <ul class="dropdown-menu">
+	                    <li><a href="#">Action</a></li>
+	                    <li><a href="#">Another action</a></li>
+	                    <li><a href="#">Something else here</a></li>
+	                    <li class="divider"></li>
+	                    <li class="nav-header">Nav header</li>
+	                    <li><a href="#">Separated link</a></li>
+	                    <li><a href="#">One more separated link</a></li>
+	                  </ul>
+	                </li>
+	              </ul>
+	            </div><!--/.nav-collapse -->
+	          </div><!-- /.navbar-inner -->
+	        </div>
+        
+			<!-- Navigation Bar OLD-->
+			<div class="navbar" style="display:none">
 				<div class="navbar-inner">
 					<div class="container">
 						<ul id="mainNav" class="nav">
