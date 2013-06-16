@@ -4,12 +4,17 @@ package com.tacs13G6;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 
 // GAE fecth
 import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.search.query.QueryTreeContext.Type;
+import com.google.gson.*;
+import com.google.gson.reflect.TypeToken;
+import com.tacs13G6.models.Torrent;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -25,46 +30,66 @@ public class GaeTestServlet extends HttpServlet {
 	  public void doGet(HttpServletRequest req, HttpServletResponse resp)
 	      throws IOException {
 
+		  Torrent to = new Torrent("titulo", "", "www.link2.com/ertert?wer=34&ert=\"wewre\"");
+		 		  
 	        resp.setContentType("text/plain");
 	        resp.getWriter().println("Hello, world");
 
 	        // ALWAYS
 	        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-	        Key feedKey = KeyFactory.createKey("Feed", "feedName");
+	        Key key = new KeyFactory.Builder("UserA1", "mbihuraA1")
+	        .addChild("FeedA1", "feedTitlteA1")
+	        .getKey();
+
 
 	        // SAVE
-	        Entity ent = new Entity(feedKey);
-	        ent.setProperty("user", "martin");
+	        Entity ent = new Entity(key);
+	        ent.setProperty("user", "martin2");
 	        ent.setProperty("date", new Date());
-	        List<Integer> num = new ArrayList<Integer>();
-	        num.add(1);
-	        num.add(2);
-	        num.add(3);
-	        ent.setProperty("content", num);
-
+	        
+	        List<String> list = new ArrayList<String>();
+	        list.add(to.toJson());
+	        list.add(to.toJson());
+	        ent.setProperty("content", list);
+	        
 	        datastore.put(ent);
+
 	        resp.getWriter().println("saving test user feeds...");
 
 	        // RETRIEVE
-	        Query query = new Query("torrent", feedKey).addSort("date", Query.SortDirection.DESCENDING);
-	        List<Entity> torrents = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(5));
 	        resp.getWriter().println("getting user feeds...");
-	        
-	        if (torrents.isEmpty()) {
-	          resp.getWriter().println("Empty: No user feeds...");
-	        }else{
-	          for (Entity torrent : torrents) {
-	            resp.getWriter().println(torrent.getProperty("user"));
-	            resp.getWriter().println(torrent.getProperty("date"));
-	            resp.getWriter().println(torrent.getProperty("content"));
-	            List<Long> numb = (List<Long>) torrent.getProperty("content");
-	            for(Long i : numb)
-	            {
-	            	resp.getWriter().print(i);
-	            }
-	            resp.getWriter().println(torrent.getProperty(""));	            
-	          }
-	        }
+	        Entity ent1;
+			try {
+				ent1 = datastore.get(key);
+
+	        String a = (String) ent1.getProperty("user");
+            resp.getWriter().println(a);
+            
+            ent.setProperty("user", a +" martin");
+            resp.getWriter().println(ent1.getProperty("date"));
+            resp.getWriter().println("------");
+            
+            list = (List<String>) ent1.getProperty("content");
+            Gson gson = new Gson();
+            for (String t : list)
+            {
+                // Converts JSON string into a collection of Student object.
+                //
+                java.lang.reflect.Type type = new TypeToken<Torrent>(){}.getType();
+                Torrent studentList = gson.fromJson(t, type);
+                        //
+                resp.getWriter().println(studentList.getTitle());
+                resp.getWriter().println(studentList.getDescription());
+                resp.getWriter().println(studentList.getLink());
+                
+            	
+            	//String[] data = t.split("/", 3);
+            	//resp.getWriter().println(new Torrent(data[0], data[1], data[2]).getLink());
+            	//resp.getWriter().println(t);
+            }
+            resp.getWriter().println("##########");	    
+			} catch (EntityNotFoundException e) {
+				resp.getWriter().println("Empty: No user feeds...");
+			}
 	      }
 	    }
-
