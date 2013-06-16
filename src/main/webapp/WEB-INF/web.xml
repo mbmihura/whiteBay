@@ -26,7 +26,7 @@
     </servlet>
     <servlet-mapping>
         <servlet-name>Feed</servlet-name>
-        <url-pattern>/*</url-pattern>
+        <url-pattern>/feeds/*</url-pattern>
     </servlet-mapping>
     
     
@@ -38,6 +38,7 @@
         <servlet-name>GaeTest</servlet-name>
         <url-pattern>/GaeTest</url-pattern>
     </servlet-mapping>
+    
      <servlet>
         <servlet-name>Hello</servlet-name>
         <servlet-class>com.tacs13G6.HelloServlet</servlet-class>
