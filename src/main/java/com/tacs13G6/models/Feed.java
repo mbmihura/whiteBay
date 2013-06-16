@@ -3,6 +3,7 @@ package com.tacs13G6.models;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.regex.Pattern;
 
 // XML lib:
 import java.io.StringWriter;
@@ -18,26 +19,22 @@ import javax.xml.stream.events.XMLEvent;
 import javax.xml.transform.stream.StreamResult;
 
 import com.tacs13G6.models.exceptions.FeedMalformedException;
-import com.tacs13G6.services.annotations.Persist;
-
 
 
 public class Feed {
 
-			@Persist
           final String title;
-			@Persist
           final String link;
-			@Persist
           final String description;
-			@Persist
           final Date pubDate;
-			@Persist
           final List<Torrent> torrents = new ArrayList<Torrent>();
 
           public Feed(String title, String link, String description, Date publicationDate) throws FeedMalformedException {
         	  if (title == null || title.isEmpty() || description == null || description.isEmpty() || link == null || link.isEmpty())
-          		throw new FeedMalformedException("At least one of title or description is requiered");
+          		throw new FeedMalformedException("Title, description and link are requiered");
+        	  Pattern p = Pattern.compile("^[A-Za-z0-9_]+$");
+          	if (p.matcher(title).find())
+          		throw new FeedMalformedException("Title should be alphanumeric");
             this.title = title;
             this.link = link;
             this.description = description;
@@ -66,13 +63,14 @@ public class Feed {
             return pubDate;
           }
 
-          @Persist
-          @Override
           public String toString() {
             return "Feed [description=" + description
                 +  ", link=" + link + ", pubDate="
                 + pubDate + ", title=" + title + "]";
           }
+          
+          public void save()
+          {}
           
           public String toXML() throws Exception {
 		    // Create a XMLOutputFactory
@@ -120,7 +118,7 @@ public class Feed {
 		    for (Torrent entry : this.getTorrents()) {
 		      eventWriter.add(eventFactory.createStartElement("", "", "item"));
 		      eventWriter.add(end);
-		      createNode(eventWriter, "title", entry.getTitle());
+		      //createNode(eventWriter, "title", entry.getTitle());
 		      //createNode(eventWriter, "description", entry.getDescription());
 		      createNode(eventWriter, "link", entry.getLink());
 		      //createNode(eventWriter, "guid", entry.getGuid());
