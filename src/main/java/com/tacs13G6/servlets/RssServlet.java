@@ -26,30 +26,31 @@ public class RssServlet extends HttpServlet {
      * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
      */
      protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-            PrintWriter out = response.getWriter();
-            String path = request.getPathInfo();
-            if (path != null)
-            {
-	            String feedId = path.split("/(.*?)",3)[1];
-	         // IF (exist in DB) {
-	            //	
-		            try {
-		            	// Se encontro el feed, se genera el XML y envia al cliente.
-		                //TODO: Genera el XML y envia el feed.
-		                String xml = new MockFeed().toXML();
-		                response.setContentType("text/xml"); 
-		                response.setStatus(HttpServletResponse.SC_OK);
-		                out.print(xml);
-		            } catch (Exception e) {
-	                    // No se pudo generar el xml por un error del serializador.
-	                    e.printStackTrace();
-	                    response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-		            }
-	            // } else {
-		        //    	response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-	            // }
-            } else {
-            	response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-            }
+		PrintWriter out = response.getWriter();
+		UrlFeedParserService parser = new UrlFeedParserService(request.getPathInfo());
+
+		if (parser.hasUser() && parser.hasFeed())
+		{
+	//  IF (exist in DB) {
+	//	
+		    try {
+		    	// Se encontro el feed, se genera el XML y envia al cliente.
+		        //TODO: Genera el XML y envia el feed.
+		        String xml = new MockFeed().toXML();
+		        response.setContentType("text/xml"); 
+		        response.setStatus(HttpServletResponse.SC_OK);
+		        out.print(xml);
+		    } catch (Exception e) {
+		        // No se pudo generar el xml por un error del serializador.
+		        e.printStackTrace();
+		        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+		    }
+	//  } else {
+	//    	response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+	//  }
+		} else
+		{
+			response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+		}
     }
 }

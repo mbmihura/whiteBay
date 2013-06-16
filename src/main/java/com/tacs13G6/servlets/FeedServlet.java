@@ -52,19 +52,12 @@ public class FeedServlet extends HttpServlet {
      */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
             PrintWriter out = response.getWriter(); 
-            String path = request.getPathInfo();
+            UrlFeedParserService parser = new UrlFeedParserService(request.getPathInfo());
 
             Gson jsonFactory = new Gson();
-            if (path == null)
+            if (parser.hasUser())
             {
-                    Set<Feed> feeds = new HashSet<Feed>();
-                    // TODO: get all feed for the current user from the data base.
-                                            
-                    out.println(jsonFactory.toJson(feeds));
-            }
-            else
-            {
-                    String feedId = request.getPathInfo().split("/(.*?)",3)[1];
+                    String feedId = parser.getFeed();
                     Feed feed;
                     //TODO: Buscar feedId en la DB, validar que sea el usuario actual y cargar el objeto en feed.
                     try {
@@ -77,7 +70,12 @@ public class FeedServlet extends HttpServlet {
 					}
                     
                     
-            }
+            } else
+            {
+                Set<Feed> feeds = new HashSet<Feed>();
+                // TODO: get all feed for the current user from the data base.                       
+                out.println(jsonFactory.toJson(feeds));
+        }
     out.close();  
     }
 
@@ -85,7 +83,7 @@ public class FeedServlet extends HttpServlet {
      * @see HttpServlet#doPut(HttpServletRequest, HttpServletResponse)
      */
     protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    	String path = request.getPathInfo();
+    	UrlFeedParserService parser = new UrlFeedParserService(request.getPathInfo());
     	
     	PrintWriter out = response.getWriter(); 
 
@@ -104,8 +102,9 @@ public class FeedServlet extends HttpServlet {
         
         out.println();
         
-        if (path != null)
+        if (parser.hasUser() && parser.hasFeed())
         {
+
 //        	String feedId = request.getPathInfo().split("/(.*?)",3)[1];
 //            DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 //            Key key = KeyFactory.createKey("UserInfo", feedId);
@@ -117,12 +116,12 @@ public class FeedServlet extends HttpServlet {
 //
 //	        datastore.put(ent);
             
-        	response.setStatus(HttpServletResponse.SC_CREATED);
-        }
-        else
+	        	response.setStatus(HttpServletResponse.SC_CREATED);
+        }else
         {
-        	response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+        	response.setStatus(HttpServletResponse.SC_FORBIDDEN);
         }
+        
         
         
 
@@ -142,8 +141,8 @@ public class FeedServlet extends HttpServlet {
      * @see HttpServlet#doDelete(HttpServletRequest, HttpServletResponse)
      */
     protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    	String path = request.getPathInfo();
-        if (path != null)
+    	UrlFeedParserService parser = new UrlFeedParserService(request.getPathInfo());
+        if (parser.hasUser() && parser.hasFeed())
         {
         	String feedId = request.getPathInfo().split("/(.*?)",3)[1];
             DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
@@ -157,14 +156,14 @@ public class FeedServlet extends HttpServlet {
         }
         else
         {
-        	response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+        	response.setStatus(HttpServletResponse.SC_FORBIDDEN);
         }
     }
     /**
      * @see HttpServlet#doPost(HttpServletRequest, HttpServletResponse)
      */
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    	String path = request.getPathInfo();
+    	UrlFeedParserService parser = new UrlFeedParserService(request.getPathInfo());
     	
     	PrintWriter out = response.getWriter(); 
 
@@ -183,7 +182,7 @@ public class FeedServlet extends HttpServlet {
         
         out.println();
         
-        if (path != null)
+        if (parser.hasUser() && parser.hasFeed())
         {
 //        	String feedId = request.getPathInfo().split("/(.*?)",3)[1];
 //            DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
@@ -200,7 +199,7 @@ public class FeedServlet extends HttpServlet {
         }
         else
         {
-        	response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+        	response.setStatus(HttpServletResponse.SC_FORBIDDEN);
         }
         
         
