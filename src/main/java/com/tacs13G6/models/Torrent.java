@@ -1,21 +1,31 @@
 package com.tacs13G6.models;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import com.google.gson.Gson;
 import com.tacs13G6.models.exceptions.TorrentMalformedException;
 
 public class Torrent {
-	final String title;
-    final String description;
-    final String link;
+	 String title;
+     String description;
+     String link;
     
     public Torrent(String title, String description, String link)
     {
-    	if ((title == null || title.isEmpty()) && (description == null || description.isEmpty()))
-    		throw new TorrentMalformedException("At least one of title or description is requiered");
+    	//if (title == null || title.isEmpty())
+    	//	throw new TorrentMalformedException("title requiered");
+    	//Pattern p = Pattern.compile("^[A-Za-z0-9_]+$");
+    	//if (p.matcher(title).find() || p.matcher("").find() || p.matcher("").find())
+    	//	throw new TorrentMalformedException("Torrent data can not contain especial characters");
     	this.title = title;
     	this.description = description;
     	this.link = link;
     }
     
+    public Torrent()
+    {
+    }
     /**
      * @return the title
      */
@@ -42,8 +52,11 @@ public class Torrent {
         
     @Override
     public String toString() {
-            return "FeedMessage [title=" + title + ", description=" + description
-                    + ", link=" + link + "]";
+            return title + "@" + description + "@" + link;
     }
-    
+
+	public String toJson() {
+		Gson gson = new Gson();
+		return gson.toJson(this);
+	}
 }
