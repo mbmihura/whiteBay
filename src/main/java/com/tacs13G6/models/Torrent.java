@@ -7,6 +7,15 @@ public class Torrent {
     final String description;
     final String link;
     
+    /**
+     * Crea un nuevo objeto torrent.
+     * 
+     * @param title Titulo del torrent.
+     * @param description Descripcion del torrent.
+     * @param link Url del torrent.
+     * 
+     * @exception TorrentMalformedException Si tanto el titulo como la descripcion del torrent nulos o vacios.
+     */
     public Torrent(String title, String description, String link)
     {
     	if ((title == null || title.isEmpty()) && (description == null || description.isEmpty()))
