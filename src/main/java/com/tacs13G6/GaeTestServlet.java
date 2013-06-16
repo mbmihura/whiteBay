@@ -12,6 +12,7 @@ import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Query;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -32,10 +33,14 @@ public class GaeTestServlet extends HttpServlet {
 	        Key feedKey = KeyFactory.createKey("Feed", "feedName");
 
 	        // SAVE
-	        Entity ent = new Entity("torrent", feedKey);
+	        Entity ent = new Entity(feedKey);
 	        ent.setProperty("user", "martin");
 	        ent.setProperty("date", new Date());
-	        ent.setProperty("content", "dededededesseffe");
+	        List<Integer> num = new ArrayList<Integer>();
+	        num.add(1);
+	        num.add(2);
+	        num.add(3);
+	        ent.setProperty("content", num);
 
 	        datastore.put(ent);
 	        resp.getWriter().println("saving test user feeds...");
@@ -52,6 +57,11 @@ public class GaeTestServlet extends HttpServlet {
 	            resp.getWriter().println(torrent.getProperty("user"));
 	            resp.getWriter().println(torrent.getProperty("date"));
 	            resp.getWriter().println(torrent.getProperty("content"));
+	            List<Long> numb = (List<Long>) torrent.getProperty("content");
+	            for(Long i : numb)
+	            {
+	            	resp.getWriter().print(i);
+	            }
 	            resp.getWriter().println(torrent.getProperty(""));	            
 	          }
 	        }

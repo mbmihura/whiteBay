@@ -18,16 +18,21 @@ import javax.xml.stream.events.XMLEvent;
 import javax.xml.transform.stream.StreamResult;
 
 import com.tacs13G6.models.exceptions.FeedMalformedException;
-import com.tacs13G6.models.exceptions.TorrentMalformedException;
+import com.tacs13G6.services.annotations.Persist;
+
 
 
 public class Feed {
 
+			@Persist
           final String title;
+			@Persist
           final String link;
+			@Persist
           final String description;
+			@Persist
           final Date pubDate;
-
+			@Persist
           final List<Torrent> torrents = new ArrayList<Torrent>();
 
           public Feed(String title, String link, String description, Date publicationDate) throws FeedMalformedException {
@@ -43,6 +48,7 @@ public class Feed {
             return torrents;
           }
 
+          
           public String getTitle() {
             return title;
           }
@@ -60,6 +66,7 @@ public class Feed {
             return pubDate;
           }
 
+          @Persist
           @Override
           public String toString() {
             return "Feed [description=" + description
