@@ -21,12 +21,12 @@
         <url-pattern>/social/*</url-pattern>
     </servlet-mapping>
     <servlet>
-        <servlet-name>Feed</servlet-name>
+        <servlet-name>Feeds</servlet-name>
         <servlet-class>com.tacs13G6.servlets.FeedServlet</servlet-class>
     </servlet>
     <servlet-mapping>
-        <servlet-name>Feed</servlet-name>
-        <url-pattern>/*</url-pattern>
+        <servlet-name>Feeds</servlet-name>
+        <url-pattern>/feeds/*</url-pattern>
     </servlet-mapping>
     
     
