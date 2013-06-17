@@ -161,56 +161,7 @@ public class FeedServlet extends HttpServlet {
         {
         	response.setStatus(HttpServletResponse.SC_FORBIDDEN);
         }
-        out.close();
-        
-
-        String feedId = request.getParameter("feed");
-        
-        out.println("hello Put! " + feedId);
-               
-        Map m = request.getParameterMap();
-        Enumeration e = request.getParameterNames();
-        while (e.hasMoreElements()) {
-        	  Object element = e.nextElement();
-        	  out.println(element);
-        	  out.println(request.getParameter(element.toString()));
-        	}
-        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-        
-        out.println();
-        
-        if (parser.hasUser() && parser.hasFeed())
-        {
-//        	String feedId = request.getPathInfo().split("/(.*?)",3)[1];
-//            DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-//            Key key = KeyFactory.createKey("UserInfo", feedId);
-//            
-//            Entity ent = new Entity("torrent", key);
-//	        ent.setProperty("user", "martin");
-//	        ent.setProperty("date", new Date());
-//	        ent.setProperty("content", "dededededesseffe");
-//
-//	        datastore.put(ent);
-        	response.setStatus(HttpServletResponse.SC_OK);
-            
-        }
-        else
-        {
-        	response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-        }
-        
-        
-
-    // Converts JSON string into a collection of Student object.
-    //
-    //Type type = new TypeToken<List<Student>>(){}.getType();
-    //List<Student> studentList = gson.fromJson(jsonStudents, type);
-            //
-    //for (Student student : studentList) {
-    //    System.out.println("student.getName() = " + student.getName());
-    //}
-
-    out.close();
+        out.close();        
     }
 
 }
