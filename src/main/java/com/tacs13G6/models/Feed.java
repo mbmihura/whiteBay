@@ -3,7 +3,9 @@ package com.tacs13G6.models;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.regex.Pattern;
 
+import java.io.Console;
 // XML lib:
 import java.io.StringWriter;
 import javax.xml.stream.XMLEventFactory;
@@ -17,30 +19,120 @@ import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 import javax.xml.transform.stream.StreamResult;
 
+import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.DatastoreServiceFactory;
+import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.EntityNotFoundException;
+import com.google.appengine.api.datastore.FetchOptions;
+import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
+import com.google.appengine.api.datastore.Query;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.tacs13G6.models.exceptions.FeedMalformedException;
-import com.tacs13G6.models.exceptions.TorrentMalformedException;
 
 
 public class Feed {
+	public static List<Feed> find(String userId) {
+		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+		Key userKey = KeyFactory.createKey("UserA1", userId);
+		Query mediaQuery = new Query()
+        .setAncestor(userKey)
+        .addFilter(Entity.KEY_RESERVED_PROPERTY,
+		                       Query.FilterOperator.GREATER_THAN,
+		                       userKey);
 
+		List<Entity> results = datastore.prepare(mediaQuery)
+		                   .asList(FetchOptions.Builder.withDefaults());
+		List<Feed> userFeeds = new ArrayList<Feed>();
+		for(Entity feedEntity : results)
+		{
+			String eTitle = (String) feedEntity.getProperty("title");
+			String eLink = (String) feedEntity.getProperty("link");
+	        String eDescription= (String) feedEntity.getProperty("description");
+	        Date ePubDate = (Date) feedEntity.getProperty("pubDate");
+	        String eUSerId = (String) feedEntity.getProperty("userId");
+	        try {
+				Feed feed = new Feed(eTitle, eLink, eDescription, ePubDate, userId );
+				Gson gson = new Gson();
+				List<String> list = (List<String>)feedEntity.getProperty("torrents");
+				//Necesario, ya que aunque se carga durante el metodo save(), si esta vacio datastore almacena nulo en ves de una lista vacia.
+				if (list != null){
+		            for (String t : list)
+		            {
+		                java.lang.reflect.Type type = new TypeToken<Torrent>(){}.getType();
+		                Torrent torrent = gson.fromJson(t, type);
+	
+		                feed.torrents.add(torrent);
+		            }
+				}
+	            userFeeds.add(feed);
+			} catch (FeedMalformedException e) {
+				e.printStackTrace();
+			}
+		}
+        return userFeeds;
+	}
+	
+	public static Feed find(String title, String userId) throws EntityNotFoundException, FeedMalformedException{
+		// Generate key
+        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+        Key feedKey = new KeyFactory.Builder("UserA1", userId)
+        .addChild("FeedA1", title)
+        .getKey();
+        
+        // Get Entity
+        Entity feedEntity;
+
+		feedEntity = datastore.get(feedKey);
+
+        String eLink = (String) feedEntity.getProperty("link");
+        String eDescription= (String) feedEntity.getProperty("description");
+        Date ePubDate = (Date) feedEntity.getProperty("pubDate");
+        
+        try {
+			Feed feed = new Feed(title, eLink, eDescription, ePubDate, userId );
+			Gson gson = new Gson();
+			List<String> list = (List<String>)feedEntity.getProperty("torrents");
+			//Necesario, ya que aunque se carga durante el metodo save(), si esta vacio datastore almacena nulo en ves de una lista vacia.
+			if (list != null){
+            for (String t : list)
+            {
+                java.lang.reflect.Type type = new TypeToken<Torrent>(){}.getType();
+                Torrent torrent = gson.fromJson(t, type);
+
+                feed.torrents.add(torrent);
+            }
+			}
+            return feed;
+		} catch (FeedMalformedException e) {
+			e.printStackTrace();
+			throw e;
+		}
+        
+	}
+	public static Feed createFeed(String title, String link, String description, String userId) throws FeedMalformedException {
+  	  return new Feed(title, link, description,new Date(), userId);
+    }
+		  final String userId;
           final String title;
           final String link;
           final String description;
           final Date pubDate;
-
           final List<Torrent> torrents = new ArrayList<Torrent>();
 
-          public Feed(String title, String link, String description, Date publicationDate) throws FeedMalformedException {
+          private Feed(String title, String link, String description, Date publicationDate, String userId) throws FeedMalformedException {
         	  if (title == null || title.isEmpty() || description == null || description.isEmpty() || link == null || link.isEmpty())
-          		throw new FeedMalformedException("At least one of title or description is requiered");
+          		throw new FeedMalformedException("Title, description and link are requiered: " + title + description + link);
+        	  Pattern p = Pattern.compile("^[A-Za-z0-9_]+$");
+          	if (!p.matcher(title).find())
+          		throw new FeedMalformedException("Title should be alphanumeric");
             this.title = title;
             this.link = link;
             this.description = description;
             this.pubDate = publicationDate;
-          }
+            this.userId = userId;
 
-          public List<Torrent> getTorrents() {
-            return torrents;
           }
 
           public String getTitle() {
@@ -54,17 +146,41 @@ public class Feed {
           public String getDescription() {
             return description;
           }
-
-
           public Date getPubDate() {
             return pubDate;
           }
+          public List<Torrent> getTorrents() {
+              return torrents;
+            }
 
-          @Override
           public String toString() {
             return "Feed [description=" + description
                 +  ", link=" + link + ", pubDate="
                 + pubDate + ", title=" + title + "]";
+          }
+          
+          public void save()
+          {
+        	// Create Key
+  	        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+  	        Key key = new KeyFactory.Builder("UserA1", this.userId)
+  	        .addChild("FeedA1", this.title)
+  	        .getKey();
+  	        // SAVE: create and put entity
+  	        Entity ent = new Entity(key);
+  	        ent.setProperty("title", this.title);
+  	        ent.setProperty("userId", this.userId);
+  	        ent.setProperty("link", this.link);
+  	        ent.setProperty("description", this.description);
+  	        ent.setProperty("pubDate", this.pubDate);
+  	        List<String> list = new ArrayList<String>();
+  	        for(Torrent t : this.torrents)
+  	        {
+  	        	list.add(t.toJson());
+  	        }
+  	        ent.setProperty("torrents", list);
+  	        
+  	        datastore.put(ent);
           }
           
           public String toXML() throws Exception {
@@ -113,7 +229,7 @@ public class Feed {
 		    for (Torrent entry : this.getTorrents()) {
 		      eventWriter.add(eventFactory.createStartElement("", "", "item"));
 		      eventWriter.add(end);
-		      createNode(eventWriter, "title", entry.getTitle());
+		      //createNode(eventWriter, "title", entry.getTitle());
 		      //createNode(eventWriter, "description", entry.getDescription());
 		      createNode(eventWriter, "link", entry.getLink());
 		      //createNode(eventWriter, "guid", entry.getGuid());
@@ -153,5 +269,6 @@ public class Feed {
 		    eventWriter.add(eElement);
 		    eventWriter.add(end);
 		  }
+
 
         } 

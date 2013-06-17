@@ -6,6 +6,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.HashSet;
@@ -31,6 +32,7 @@ import com.google.gson.Gson;
 //import edu.tacs.group6.models.MockRSSFeedWriter;
 import com.tacs13G6.models.Feed;
 import com.tacs13G6.models.MockFeed;
+import com.tacs13G6.models.Torrent;
 import com.tacs13G6.models.exceptions.FeedMalformedException;
 
 /**
@@ -51,32 +53,44 @@ public class FeedServlet extends HttpServlet {
      * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
      */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-            PrintWriter out = response.getWriter(); 
-            UrlFeedParserService parser = new UrlFeedParserService(request.getPathInfo());
+        PrintWriter out = response.getWriter(); 
+        UrlFeedParserService parser = new UrlFeedParserService(request.getPathInfo());
 
-            Gson jsonFactory = new Gson();
-            if (parser.hasUser())
-            {
+        Gson jsonFactory = new Gson();
+        if (parser.hasUser())
+        {
+            String userId = parser.getUser();
+          //TODO:  If (usuario actual NO coincide con el userId) {
+	      //    response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+	      //} else {
+                if (parser.hasFeed()) {
                     String feedId = parser.getFeed();
-                    Feed feed;
-                    //TODO: Buscar feedId en la DB, validar que sea el usuario actual y cargar el objeto en feed.
-                    try {
-						feed = new MockFeed();
+		        	Feed feed; 
+		            //Buscar feed en la DB, validar que sea el usuario actual y cargar el objeto en feed.
+		            try {
+						feed = Feed.find(feedId, userId);
 						out.println(jsonFactory.toJson(feed));
+						response.setStatus(HttpServletResponse.SC_OK);
 					} catch (FeedMalformedException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
+						out.println(jsonFactory.toJson(e.getMessage()));
 						response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+					} catch (EntityNotFoundException e) {
+						// TODO Auto-generated catch block
+						response.setStatus(HttpServletResponse.SC_NOT_FOUND);
 					}
-                    
-                    
-            } else
-            {
-                Set<Feed> feeds = new HashSet<Feed>();
-                // TODO: get all feed for the current user from the data base.                       
-                out.println(jsonFactory.toJson(feeds));
+                } else {
+                	List<Feed> usersFeeds = Feed.find(userId);                 
+                    out.println(jsonFactory.toJson(usersFeeds));
+                }
+	      //}
+                
+        } else
+        {
+        	response.setStatus(HttpServletResponse.SC_FORBIDDEN);
         }
-    out.close();  
+	    out.close();  
     }
 
     /**
@@ -84,88 +98,71 @@ public class FeedServlet extends HttpServlet {
      */
     protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     	UrlFeedParserService parser = new UrlFeedParserService(request.getPathInfo());
-    	
     	PrintWriter out = response.getWriter(); 
-
-        String feedId = request.getParameter("feed");
         
-        out.println("hello Put! " + feedId);
-               
-        Map m = request.getParameterMap();
-        Enumeration e = request.getParameterNames();
-        while (e.hasMoreElements()) {
-        	  Object element = e.nextElement();
-        	  out.println(element);
-        	  out.println(request.getParameter(element.toString()));
-        	}
-        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-        
-        out.println();
-        
-        if (parser.hasUser() && parser.hasFeed())
+        if (parser.hasUser() && parser.hasFeed() /* TODO: && user is current user*/)
         {
-
-//        	String feedId = request.getPathInfo().split("/(.*?)",3)[1];
-//            DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-//            Key key = KeyFactory.createKey("UserInfo", feedId);
-//            
-//            Entity ent = new Entity("torrent", key);
-//	        ent.setProperty("user", "martin");
-//	        ent.setProperty("date", new Date());
-//	        ent.setProperty("content", "dededededesseffe");
-//
-//	        datastore.put(ent);
-            
-	        	response.setStatus(HttpServletResponse.SC_CREATED);
+             String link = request.getParameter("link");
+             String description = request.getParameter("description");
+             try {
+				Feed a = Feed.createFeed(parser.getFeed(), link, description, parser.getUser());
+				//a.getTorrents().add(new Torrent("title", "desc", "link"));
+				a.save();
+				response.setStatus(HttpServletResponse.SC_CREATED);
+			} catch (FeedMalformedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				response.getWriter().println(e.getMessage());
+				
+				response.getWriter().println(parser.getFeed());
+				response.getWriter().println(link);
+				response.getWriter().println(description);
+				response.getWriter().println(parser.getUser());
+				response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			}	        	
         }else
         {
         	response.setStatus(HttpServletResponse.SC_FORBIDDEN);
         }
-        
-        
-        
-
-    // Converts JSON string into a collection of Student object.
-    //
-    //Type type = new TypeToken<List<Student>>(){}.getType();
-    //List<Student> studentList = gson.fromJson(jsonStudents, type);
-            //
-    //for (Student student : studentList) {
-    //    System.out.println("student.getName() = " + student.getName());
-    //}
-
-    out.close();
+        out.close();
     }
 
-    /**
-     * @see HttpServlet#doDelete(HttpServletRequest, HttpServletResponse)
-     */
-    protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    	UrlFeedParserService parser = new UrlFeedParserService(request.getPathInfo());
-        if (parser.hasUser() && parser.hasFeed())
-        {
-        	String feedId = request.getPathInfo().split("/(.*?)",3)[1];
-            DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-            Key key = KeyFactory.createKey("UserInfo", feedId);
-            try {
-				datastore.get(key);
-				response.setStatus(HttpServletResponse.SC_NO_CONTENT);
-			} catch (EntityNotFoundException e) {
-				response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-			}
-        }
-        else
-        {
-        	response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-        }
-    }
+
     /**
      * @see HttpServlet#doPost(HttpServletRequest, HttpServletResponse)
      */
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     	UrlFeedParserService parser = new UrlFeedParserService(request.getPathInfo());
-    	
     	PrintWriter out = response.getWriter(); 
+        
+        if (parser.hasUser() && parser.hasFeed() /* TODO: && user is current user*/)
+        {
+        	String title = request.getParameter("title");
+             String link = request.getParameter("link");
+             String description = request.getParameter("description");
+             try {
+				Feed a = Feed.find(parser.getFeed(),parser.getUser());
+				a.getTorrents().add(new Torrent(title, description, link));
+				a.save();
+				response.setStatus(HttpServletResponse.SC_OK);
+			} catch (FeedMalformedException e) {
+				e.printStackTrace();
+				response.getWriter().println(e.getMessage());
+				
+				response.getWriter().println(parser.getFeed());
+				response.getWriter().println(link);
+				response.getWriter().println(description);
+				response.getWriter().println(parser.getUser());
+				response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			} catch (EntityNotFoundException e) {
+				response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+			}	        	
+        }else
+        {
+        	response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+        }
+        out.close();
+        
 
         String feedId = request.getParameter("feed");
         
