@@ -34,6 +34,7 @@ import com.tacs13G6.models.Feed;
 import com.tacs13G6.models.MockFeed;
 import com.tacs13G6.models.Torrent;
 import com.tacs13G6.models.exceptions.FeedMalformedException;
+import com.tacs13G6.models.exceptions.TorrentTitleAlreadyExistsInFeedException;
 
 /**
  * Servlet implementation class FeedServlet
@@ -142,9 +143,19 @@ public class FeedServlet extends HttpServlet {
              String description = request.getParameter("description");
              try {
 				Feed a = Feed.find(parser.getFeed(),parser.getUser());
+				boolean titleAlreadyExists = false;
+				for (Torrent t : a.getTorrents())
+				{
+					titleAlreadyExists = titleAlreadyExists || t.getTitle().equals(title);
+				}
+				if (titleAlreadyExists)
+				{
+					throw new TorrentTitleAlreadyExistsInFeedException("Feed already contains a torrent with title "+ title);
+				} else{
 				a.getTorrents().add(new Torrent(title, description, link));
 				a.save();
 				response.setStatus(HttpServletResponse.SC_OK);
+                }
 			} catch (FeedMalformedException e) {
 				e.printStackTrace();
 				response.getWriter().println(e.getMessage());
@@ -156,6 +167,9 @@ public class FeedServlet extends HttpServlet {
 				response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			} catch (EntityNotFoundException e) {
 				response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+			} catch (TorrentTitleAlreadyExistsInFeedException e) {
+				response.getWriter().println(e.getMessage());
+				response.setStatus(HttpServletResponse.SC_PRECONDITION_FAILED);
 			}	        	
         }else
         {
