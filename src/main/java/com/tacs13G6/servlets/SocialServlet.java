@@ -37,7 +37,7 @@ public class SocialServlet extends HttpServlet {
 		            try {
 		            	// Se encontro el feed, se genera el XML y envia al cliente.
 		                //TODO: Genera el XML y envia el feed.
-		                String xml = new MockFeed().toXML();
+		                String xml = MockFeed.Create().toXML();
 		                response.setContentType("text/xml"); 
 		                response.setStatus(HttpServletResponse.SC_OK);
 		                out.print(xml);
