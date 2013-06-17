@@ -129,7 +129,7 @@
 	          </div><!-- /.navbar-inner -->
 	        </div>
 		</div>
-		<div id="mainAlert" class="alert text-center" style="display:none"></div>
+		<div id="mainAlert" class="alert text-center" style="display:none"><button type="button" class="close" data-dismiss="alert"><i class="icon-remove"></i></button><span></span></div>
 		<!-- User's Feeds List -->
 		<div id="userFeedsView">
 		<div id="noFeedMsg" class="jumbotron" style="display: none">
@@ -211,8 +211,8 @@
 				</div>
 			</div>
 			<div class="form-actions">
-				<button type="submit" class="btn btn-primary">Create Feed</button>
-				<button type="button" class="btn">Cancel</button>
+				<button type="submit" onclick="createFeedCancel();" class="btn btn-primary">Create Feed</button>
+				<button type="button" class="btn" onclick="createFeed();">Cancel</button>
 			</div>
 		</form>
 		<!-- Add Torrent to Feed View -->
@@ -220,16 +220,28 @@
 			style="display: none">
 			<legend>Add torrent to feed</legend>
 			<div class="control-group">
-				<label class="control-label" for="urlInput">Url: </label>
+				<label class="control-label" for="addTorrentTitle">Title: </label>
 				<div class="controls">
-					<input type="text" id="urlInput" placeholder="torrent's url...">
+					<input type="text" id="addTorrentTitle" placeholder="torrent's title...">
+				</div>
+			</div>
+			<div class="control-group">
+				<label class="control-label" for="addTorrentUrlInput">Url: </label>
+				<div class="controls">
+					<input type="text" id="addTorrentUrlInput" placeholder="torrent's url...">
+				</div>
+			</div>
+			<div class="control-group">
+				<label class="control-label" for="addTorrentDesc">Description: </label>
+				<div class="controls">
+					<textarea rows="3" id="addTorrentDesc" placeholder="torrent's description..."></textarea>
 				</div>
 			</div>
 			<div class="control-group">
 
-				<label class="control-label" for="feedSelect">Feed: </label>
+				<label class="control-label" for="addTorrentFeedSelect">Feed: </label>
 				<div class="controls">
-					<select id="feedSelect">
+					<select id="addTorrentFeedSelect">
 						<option>Private Feed</option>
 						<option>Feed 1</option>
 						<option>Feed 2</option>
@@ -244,8 +256,8 @@
 				</div>
 			</div>
 			<div class="form-actions">
-				<button type="submit" class="btn btn-primary">Save Torrent</button>
-				<button type="button" class="btn">Cancel</button>
+				<button type="submit" class="btn btn-primary" onclick="addTorrent();">Save Torrent</button>
+				<button type="button" class="btn" onclick="addTorrentCancel();">Cancel</button>
 			</div>
 		</form>
 
@@ -260,7 +272,9 @@
 	<script src="/assets/js/jquery-2.0.2.min.js"></script>
 	<script src="/assets/js/bootstrap.js"></script>
 	<script type="text/javascript">
+        // UI Javascript Functions:
 		$(document).ready(function() {
+			//Init Nav bar behavior
 			$("#mainNav").children().each(function() {
 				$(this).click(function() {
 					$("#mainNav").children().each(function() {
@@ -270,6 +284,15 @@
 					showView($(this).attr('data-showview'));
 				});
 			});
+			// If user comes from a share torrent link
+			var t;
+			<%
+				String addTorrent = request.getParameter("addTorrent");
+				if (addTorrent != null)
+			    	out.println("loadAppDisplayingAddTorrentView('" + addTorrent +"');");
+			%>
+			
+			
 		});
 		function showView(viewId) {
 			$("#userFeedsView").hide();
@@ -278,29 +301,84 @@
 			$(viewId).fadeIn();
 		}
 		function showAlert(msg,type){
-			$('#mainAlert').addClass(type).text(msg).show().delay(1200).fadeOut(1000,function() {
+			$('#mainAlert > span').text(msg)
+			$('#mainAlert').addClass(type).show().delay(1200).fadeOut(1000,function() {
 				$('#mainAlert').removeClass(type);
 				});
 		}
-		function shareFeed(feedId)
+		function loadAppDisplayingAddTorrentView(torrenturl) {
+			if (torrenturl != null)
+			{
+				//todo: update nav buttons state. remove from $(document).ready()
+				var t = getTorrent(torrenturl);
+				$("#addTorrentTitle").val(t.title);
+				$("#addTorrentUrlInput").val(t.url);
+				if (t.description =! null)
+					$("#addTorrentDesc").val(t.description);
+				showView("addTorrentView");
+			}
+		}
+		
+		// API CALLS & Feeds, Torrents, Social Forms:
+		function createFeedCancel()
 		{
+			//TODO: reset form fileds.
+			showView("#userFeedsView");
+		}
+		function addTorrentCancel(feedId)
+		{
+			//TODO: reset form fields.
+			showView("#userFeedsView");
+		}
+
+		
+		function getTorrent(feedId)
+		{
+			//TODO: finish
+			$.ajax({
+				  url: '/feed/' + feedId + "/publish",
+				  type: 'POST'})
+				  .done(function(data) { return data; })
+				  .fail(function() { showAlert("Feed couldn't be shared on facebook!","alert-error"); });
+		}
+		function addTorrent(feedId)
+		{
+			//TODO: finish
+			$.ajax({
+				  url: '/feed/' + feedId + "/publish",
+				  type: 'POST'})
+				  .done(function() { showAlert("Feed shared!","alert-success"); })
+				  .fail(function() { showAlert("Feed couldn't be shared on facebook!","alert-error"); });
+			showView("#userFeedsView");
+		}
+		function createFeed()
+		{
+			//TODO: finish
+			$.ajax({
+				  url: '/feed/' + feedId + "/publish",
+				  type: 'POST'})
+				  .done(function() { showAlert("Feed shared!","alert-success"); })
+				  .fail(function() { showAlert("Feed couldn't be shared on facebook!","alert-error"); });
+			showView("#userFeedsView");
+			
+		}
+		function getAllFeeds()
+		{
+			//TODO: finish
 			$.ajax({
 				  url: '/feed/' + feedId + "/publish",
 				  type: 'POST'})
 				  .done(function() { showAlert("Feed shared!","alert-success"); })
 				  .fail(function() { showAlert("Feed couldn't be shared on facebook!","alert-error"); });
 		}
-		function createFeedCancel()
+		function shareFeed(feedId)
 		{
-		}
-		function createFeedExecute(feedId)
-		{
-		}
-		function addTorrentCancel()
-		{
-		}
-		function addTorrentExecute(feedId)
-		{
+			//TODO: finish
+			$.ajax({
+				  url: '/feed/' + feedId + "/publish",
+				  type: 'POST'})
+				  .done(function() { showAlert("Feed shared!","alert-success"); })
+				  .fail(function() { showAlert("Feed couldn't be shared on facebook!","alert-error"); });
 		}
 		
 	</script>
