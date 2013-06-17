@@ -73,12 +73,10 @@ public class FeedServlet extends HttpServlet {
 						out.println(jsonFactory.toJson(feed));
 						response.setStatus(HttpServletResponse.SC_OK);
 					} catch (FeedMalformedException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 						out.println(jsonFactory.toJson(e.getMessage()));
 						response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 					} catch (EntityNotFoundException e) {
-						// TODO Auto-generated catch block
 						response.setStatus(HttpServletResponse.SC_NOT_FOUND);
 					}
                 } else {

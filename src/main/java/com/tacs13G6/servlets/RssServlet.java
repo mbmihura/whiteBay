@@ -2,13 +2,19 @@ package com.tacs13G6.servlets;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.xml.stream.XMLStreamException;
 
+import com.google.appengine.api.datastore.EntityNotFoundException;
+import com.google.gson.Gson;
+import com.tacs13G6.models.Feed;
 import com.tacs13G6.models.MockFeed;
+import com.tacs13G6.models.exceptions.FeedMalformedException;
 /**
  * Permite acceder mediante un pedido GET a los distintos feed del usuario en 
  * formato XML, el cual puede ser interpretado por un cliente torrent.
@@ -26,31 +32,32 @@ public class RssServlet extends HttpServlet {
      * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
      */
      protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		PrintWriter out = response.getWriter();
-		UrlFeedParserService parser = new UrlFeedParserService(request.getPathInfo());
+    	 PrintWriter out = response.getWriter(); 
+         UrlFeedParserService parser = new UrlFeedParserService(request.getPathInfo());
 
-		if (parser.hasUser() && parser.hasFeed())
-		{
-	//  IF (exist in DB) {
-	//	
-		    try {
-		    	// Se encontro el feed, se genera el XML y envia al cliente.
-		        //TODO: Genera el XML y envia el feed.
-		        String xml = MockFeed.Create().toXML();
-		        response.setContentType("text/xml"); 
+         if (parser.hasUser() && parser.hasFeed())
+         {
+             String userId = parser.getUser();
+             String feedId = parser.getFeed();
+             try {
+				//out.println(Feed.find(feedId, userId).toXML());
+				out.println(Feed.find(feedId, userId).toXML());
+		        response.setContentType("application/rss+xml"); 
 		        response.setStatus(HttpServletResponse.SC_OK);
-		        out.print(xml);
-		    } catch (Exception e) {
-		        // No se pudo generar el xml por un error del serializador.
-		        e.printStackTrace();
-		        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-		    }
-	//  } else {
-	//    	response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-	//  }
-		} else
-		{
-			response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-		}
+			 } catch (FeedMalformedException e ) {
+				e.printStackTrace();
+				response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			 } catch (XMLStreamException e) {
+				e.printStackTrace();
+				response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			 }   
+             catch (EntityNotFoundException e) {
+				response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+			 }  
+         } else
+         {
+         	response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+         }
+ 	    out.close();
     }
 }

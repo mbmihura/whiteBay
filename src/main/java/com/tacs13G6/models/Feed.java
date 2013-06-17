@@ -183,7 +183,7 @@ public class Feed {
   	        datastore.put(ent);
           }
           
-          public String toXML() throws Exception {
+          public String toXML() throws XMLStreamException {
 		    // Create a XMLOutputFactory
 		    XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
 	
@@ -229,8 +229,8 @@ public class Feed {
 		    for (Torrent entry : this.getTorrents()) {
 		      eventWriter.add(eventFactory.createStartElement("", "", "item"));
 		      eventWriter.add(end);
-		      //createNode(eventWriter, "title", entry.getTitle());
-		      //createNode(eventWriter, "description", entry.getDescription());
+		      createNode(eventWriter, "title", entry.getTitle());
+		      createNode(eventWriter, "description", entry.getDescription());
 		      createNode(eventWriter, "link", entry.getLink());
 		      //createNode(eventWriter, "guid", entry.getGuid());
 		      eventWriter.add(end);
