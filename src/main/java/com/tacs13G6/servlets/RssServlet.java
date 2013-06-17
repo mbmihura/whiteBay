@@ -40,7 +40,6 @@ public class RssServlet extends HttpServlet {
              String userId = parser.getUser();
              String feedId = parser.getFeed();
              try {
-				//out.println(Feed.find(feedId, userId).toXML());
 				out.println(Feed.find(feedId, userId).toXML());
 		        response.setContentType("application/rss+xml"); 
 		        response.setStatus(HttpServletResponse.SC_OK);
