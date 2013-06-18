@@ -136,7 +136,7 @@
 			<h1>Create a Feed!</h1>
 			<p class="lead">You have no feed yet. Create a feed to share it
 				with your friends.</p>
-			<a class="btn btn-large btn-success" href="#">Create Feed</a>
+<!-- 			<a class="btn btn-large btn-success" href="#">Create Feed</a> -->
 		</div>
 		<div id="feedsList" class="row-fluid">
 			<div class="span4">
