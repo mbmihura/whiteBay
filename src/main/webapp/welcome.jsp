@@ -1,188 +1,168 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<meta charset="utf-8">
-	<title>WhiteBay: Social Feeds</title>
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<meta name="description" content="Solcial Feed App">
-	<meta name="author" content="TACS Grupo 6">
-	<link href="/assets/css/bootstrap.css" rel="stylesheet">
-	<style type="text/css">
-	body {
-		padding-top: 20px;
-		padding-bottom: 60px;
-	}
-	
-	.container {
-		margin: 0 auto;
-		max-width: 1000px;
-	}
-	
-	.container>hr {
-		margin: 60px 0;
-	}
-	/* Special class on .container surrounding .navbar, used for positioning it into place. */
-    .navbar-wrapper {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      z-index: 10;
-      margin-top: 20px;
-      margin-bottom: -90px; /* Negative margin to pull up carousel. 90px is roughly margins and height of navbar. */
-    }
-    
-	/* Downsize the brand/project name a bit */
-    .navbar .brand {
-      padding-right: 20px;
-      font-size: 16px;
-      font-weight: bold;
-    }
-    
-    /* Navbar links: increase padding for taller navbar */
-    .navbar .nav > li > a {
-      padding-right: 20px;
-    }
-    
-    /* Offset the responsive button for proper vertical alignment */
-    .navbar .btn-navbar {
-      margin-top: 10px;
-    }
-    
-	/* Customize the navbar links to be fill the entire space of the .navbar */
-	.navbar .navbar-inner {
-		padding-right: 0px;
-	}
-	
-	/* queda */
-	.navbar .nav li a {
-		text-align: center;
+<meta charset="utf-8">
+<title>WhiteBay: Social Feeds</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Solcial Feed App">
+<meta name="author" content="TACS Grupo 6">
+<link href="/assets/css/bootstrap.css" rel="stylesheet">
+<style type="text/css">
+body {
+	padding-top: 20px;
+	padding-bottom: 60px;
+}
 
-	}
-	
-	/* queda */
-	#mainNav .navbar .nav li:first-child a {
-		border-left: 1px solid rgba(255, 255, 255, .75);
-	}
-	
-	
-	/* No Feeds Message: */
-	.jumbotron {
-		margin: 80px 0;
-		text-align: center;
-	}
-	
-	.jumbotron h1 {
-		font-size: 100px;
-		line-height: 1;
-	}
-	
-	.jumbotron .lead {
-		font-size: 24px;
-		line-height: 1.25;
-	}
-	
-	.jumbotron .btn {
-		font-size: 21px;
-		padding: 14px 24px;
-	}
-	
-	
-	.alert .text-center {
-		text-align: center
-	}
-	</style>
-	<link href="/assets/css/bootstrap-responsive.css" rel="stylesheet">
+.container {
+	margin: 0 auto;
+	max-width: 1000px;
+}
+
+.container>hr {
+	margin: 60px 0;
+}
+/* Special class on .container surrounding .navbar, used for positioning it into place. */
+.navbar-wrapper {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	z-index: 10;
+	margin-top: 20px;
+	margin-bottom: -90px;
+	/* Negative margin to pull up carousel. 90px is roughly margins and height of navbar. */
+}
+
+/* Downsize the brand/project name a bit */
+.navbar .brand {
+	padding-right: 20px;
+	font-size: 16px;
+	font-weight: bold;
+}
+
+/* Navbar links: increase padding for taller navbar */
+.navbar .nav>li>a {
+	padding-right: 20px;
+}
+
+/* Offset the responsive button for proper vertical alignment */
+.navbar .btn-navbar {
+	margin-top: 10px;
+}
+
+/* Customize the navbar links to be fill the entire space of the .navbar */
+.navbar .navbar-inner {
+	padding-right: 0px;
+}
+
+/* queda */
+.navbar .nav li a {
+	text-align: center;
+}
+
+/* queda */
+#mainNav .navbar .nav li:first-child a {
+	border-left: 1px solid rgba(255, 255, 255, .75);
+}
+
+/* No Feeds Message: */
+.jumbotron {
+	margin: 80px 0;
+	text-align: center;
+}
+
+.jumbotron h1 {
+	font-size: 100px;
+	line-height: 1;
+}
+
+.jumbotron .lead {
+	font-size: 24px;
+	line-height: 1.25;
+}
+
+.jumbotron .btn {
+	font-size: 21px;
+	padding: 14px 24px;
+}
+
+.alert .text-center {
+	text-align: center
+}
+</style>
+<link href="/assets/css/bootstrap-responsive.css" rel="stylesheet">
 </head>
 
 <body>
 	<div class="container">
 		<div class="masthead">
-			<h3 class="muted">White Bay Social Torrents	Feeds</h3>
+			<h3 class="muted">White Bay Social Torrents Feeds</h3>
 			<!-- NNEWWW Navigation Bar -->
 			<div class="navbar">
-	          <div class="navbar-inner">
-	            <!-- Responsive Navbar Part 1: Button for triggering responsive navbar (not covered in tutorial). Include responsive CSS to utilize. -->
-	            <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-	              <span class="icon-bar"></span>
-	              <span class="icon-bar"></span>
-	              <span class="icon-bar"></span>
-	            </button>
-	            <a class="brand" style="border-right: 1px solid rgba(0, 0, 0, .1);" href="#">username</a>
-	            <!-- Responsive Navbar Part 2: Place all navbar contents you want collapsed withing .navbar-collapse.collapse. -->
-	            <div class="nav-collapse collapse">
-	              <ul id="mainNav" class="nav">
-	                <li data-showview="#userFeedsView" class="active"><a href="#">Your feeds</a></li>
-	                <li data-showview="#addFeedView"><a href="#">Create feed</a></li>
-	                <li data-showview="#addTorrentView"><a href="#">Add torrent</a></li>
-	              </ul>
-	              <ul class="nav" style="float: right;margin: 0;border-left: 0px;">
-	                <!-- Read about Bootstrap dropdowns at http://twitter.github.com/bootstrap/javascript.html#dropdowns -->
-	                <li class="dropdown">
-	                  <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-cog"></i><b class="caret"></b></a>
-	                  <ul class="dropdown-menu">
-	                    <li><a href="#">SignOut</a></li>
-	                  </ul>
-	                </li>
-	              </ul>
-	            </div><!--/.nav-collapse -->
-	          </div><!-- /.navbar-inner -->
-	        </div>
+				<div class="navbar-inner">
+					<!-- Responsive Navbar Part 1: Button for triggering responsive navbar (not covered in tutorial). Include responsive CSS to utilize. -->
+					<button type="button" class="btn btn-navbar" data-toggle="collapse"
+						data-target=".nav-collapse">
+						<span class="icon-bar"></span> <span class="icon-bar"></span> <span
+							class="icon-bar"></span>
+					</button>
+					<a class="brand" style="border-right: 1px solid rgba(0, 0, 0, .1);"
+						href="#">username</a>
+					<!-- Responsive Navbar Part 2: Place all navbar contents you want collapsed withing .navbar-collapse.collapse. -->
+					<div class="nav-collapse collapse">
+						<ul id="mainNav" class="nav">
+							<li data-showview="#userFeedsView" class="active"><a
+								href="#">Your feeds</a></li>
+							<li data-showview="#addFeedView"><a href="#">Create feed</a></li>
+							<li data-showview="#addTorrentView"><a href="#">Add
+									torrent</a></li>
+						</ul>
+						<ul class="nav" style="float: right; margin: 0; border-left: 0px;">
+							<!-- Read about Bootstrap dropdowns at http://twitter.github.com/bootstrap/javascript.html#dropdowns -->
+							<li class="dropdown"><a href="#" class="dropdown-toggle"
+								data-toggle="dropdown"><i class="icon-cog"></i><b
+									class="caret"></b></a>
+								<ul class="dropdown-menu">
+									<li><a href="#">SignOut</a></li>
+								</ul></li>
+						</ul>
+					</div>
+					<!--/.nav-collapse -->
+				</div>
+				<!-- /.navbar-inner -->
+			</div>
 		</div>
-		<div id="mainAlert" class="alert text-center" style="display:none"></div>
+		<div id="mainAlert" class="alert text-center" style="display: none">
+			<button type="button" class="close" data-dismiss="alert">&times;</button>
+			<span></span>
+		</div>
 		<!-- Add Auth View -->
-		<div id="authView" style="display: none">Auth option: signin with fb, allow app</div>
+		<div id="authView" style="display: none">Auth option: signin
+			with fb, allow app</div>
 		<!-- User's Feeds List -->
 		<div id="userFeedsView">
 			<div id="noFeedMsg" class="jumbotron" style="display: none">
 				<h1>Create a Feed!</h1>
 				<p class="lead">You have no feed yet. Create a feed to share it
 					with your friends.</p>
-	<!-- 			<a class="btn btn-large btn-success" href="#">Create Feed</a> -->
+				<!-- 			<a class="btn btn-large btn-success" href="#">Create Feed</a> -->
 			</div>
 			<div id="feedsList" class="row-fluid">
-				<div class="span4">
+				<div class="span4 template" style="display: none">
 					<h2>Private Feed:</h2>
 					<p>
 						Feed rss url: <a>utntcas.appspot.com/rss/23423</a>
 					</p>
 					<ul>
-						<li>torrent1</li>
-						<li>torrent1</li>
 					</ul>
 					<p>
-						<a class="btn" onclick="shareFeed('1')" href="#">Share in Facebook! &raquo;</a>
-					</p>
-				</div>
-				<div class="span4">
-					<h2>Feed 2</h2>
-					<p>
-						Feed rss url: <a>utntcas.appspot.com/rss/68747</a>
-					</p>
-					<ul>
-						<li>torrent1</li>
-						<li>torrent1</li>
-					</ul>
-					<p>
-						<a class="btn" onclick="shareFeed('2')" href="#">Share in Facebook! &raquo;</a>
-					</p>
-				</div>
-				<div class="span4">
-					<h2>Feed 3</h2>
-					<p>
-						Feed rss url: <a>utntcas.appspot.com/rss/26523</a>
-					</p>
-					<ul>
-						<li>torrent1</li>
-						<li>torrent1</li>
-					</ul>
-					<p>
-						<a class="btn" onclick="shareFeed('3')" href="#">Share in Facebook! &raquo;</a>
+						<a class="btn" onclick="API.shareFeed('')" href="#">Share in
+							Facebook! &raquo;</a>
 					</p>
 				</div>
 			</div>
 		</div>
-	
+
 		<!-- Add Feed View -->
 		<form id="addFeedView" class="form-horizontal" class="jumbotron"
 			style="display: none">
@@ -202,7 +182,8 @@
 			<div class="control-group">
 				<label class="control-label" for="descInput">Description: </label>
 				<div class="controls">
-					<textarea rows="3" id="descInput" placeholder="feed's description..."></textarea>
+					<textarea rows="3" id="descInput"
+						placeholder="feed's description..."></textarea>
 				</div>
 			</div>
 			<div class="control-group">
@@ -213,8 +194,9 @@
 				</div>
 			</div>
 			<div class="form-actions">
-				<button type="submit" class="btn btn-primary">Create Feed</button>
-				<button type="button" class="btn">Cancel</button>
+				<button type="submit" onclick="createFeed();"
+					class="btn btn-primary">Create Feed</button>
+				<button type="button" class="btn" onclick="createFeedCancel();">Cancel</button>
 			</div>
 		</form>
 		<!-- Add Torrent to Feed View -->
@@ -222,16 +204,33 @@
 			style="display: none">
 			<legend>Add torrent to feed</legend>
 			<div class="control-group">
-				<label class="control-label" for="urlInput">Url: </label>
+				<label class="control-label" for="addTorrentTitle">Title: </label>
 				<div class="controls">
-					<input type="text" id="urlInput" placeholder="torrent's url...">
+					<input type="text" id="addTorrentTitle"
+						placeholder="torrent's title...">
+				</div>
+			</div>
+			<div class="control-group">
+				<label class="control-label" for="addTorrentUrlInput">Url: </label>
+				<div class="controls">
+					<input type="text" id="addTorrentUrlInput"
+						placeholder="torrent's url...">
+				</div>
+			</div>
+			<div class="control-group">
+				<label class="control-label" for="addTorrentDesc">Description:
+				</label>
+				<div class="controls">
+					<textarea rows="3" id="addTorrentDesc"
+						placeholder="torrent's description..."></textarea>
 				</div>
 			</div>
 			<div class="control-group">
 
-				<label class="control-label" for="feedSelect">Feed: </label>
+				<label class="control-label" for="addTorrentFeedSelect">Feed:
+				</label>
 				<div class="controls">
-					<select id="feedSelect">
+					<select id="addTorrentFeedSelect">
 						<option>Private Feed</option>
 						<option>Feed 1</option>
 						<option>Feed 2</option>
@@ -246,8 +245,9 @@
 				</div>
 			</div>
 			<div class="form-actions">
-				<button type="submit" class="btn btn-primary">Save Torrent</button>
-				<button type="button" class="btn">Cancel</button>
+				<button type="submit" class="btn btn-primary"
+					onclick="addTorrent();">Save Torrent</button>
+				<button type="button" class="btn" onclick="addTorrentCancel();">Cancel</button>
 			</div>
 		</form>
 
@@ -261,51 +261,139 @@
 	<!-- javascript -->
 	<script src="/assets/js/jquery-2.0.2.min.js"></script>
 	<script src="/assets/js/bootstrap.js"></script>
+	<script src="/assets/js/bootstrapExtension.js"></script>
+	<script src="/assets/js/ApiREST.js"></script>
 	<script type="text/javascript">
-		$(document).ready(function() {
-			$("#mainNav").children().each(function() {
-				$(this).click(function() {
-					$("#mainNav").children().each(function() {
-						$(this).removeClass('active');
-					});
-					$(this).addClass('active');
-					showView($(this).attr('data-showview'));
-				});
-			});
+		// UI Javascript Functions:
+		$(document)
+				.ready(
+						function() {
+							//Init Nav bar behavior
+							$("#mainNav")
+									.children()
+									.each(
+											function() {
+												$(this)
+														.click(
+																function() {
+																	$(
+																			"#mainNav")
+																			.children()
+																			.each(
+																					function() {
+																						$(
+																								this)
+																								.removeClass(
+																										'active');
+																					});
+																	$(this)
+																			.addClass(
+																					'active');
+																	showView($(
+																			this)
+																			.attr(
+																					'data-showview'));
+																});
+												// If user comes from a share torrent link
+												var f = function loadAppDisplayingAddTorrentView(
+														torrenturl) {
+													if (torrenturl != null) {
+														//todo: update nav buttons state. remove from $(document).ready()
+														var t = getTorrent(torrenturl);
+														$("#addTorrentTitle")
+																.val(t.title);
+														$("#addTorrentUrlInput")
+																.val(t.url);
+														if (t.description = !null)
+															$("#addTorrentDesc")
+																	.val(
+																			t.description);
+														showView("addTorrentView");
+													}
+												};
+	<%//TODO excape char avoid XSS
+			String addTorrent = request.getParameter("addTorrent");
+			if (addTorrent != null)
+				out.println("f('" + addTorrent + "');");
+			else
+				out.println("updateFeedList();");%>
 		});
+						});
+
+		function notification(msg, type) {
+			$('#mainAlert > span').text(msg)
+			return $('#mainAlert').removeClass(
+					"alert-block alert-error alert-success alert-info")
+					.addClass(type)
+		}
+
 		function showView(viewId) {
 			$("#userFeedsView").hide();
 			$("#addFeedView").hide();
 			$("#addTorrentView").hide();
 			$(viewId).fadeIn();
 		}
-		function showAlert(msg,type){
-			$('#mainAlert').addClass(type).text(msg).show().delay(1200).fadeOut(1000,function() {
-				$('#mainAlert').removeClass(type);
-				});
-		}
-		function shareFeed(feedId)
-		{
-			$.ajax({
-				  url: '/feed/' + feedId + "/publish",
-				  type: 'POST'})
-				  .done(function() { showAlert("Feed shared!","alert-success"); })
-				  .fail(function() { showAlert("Feed couldn't be shared on facebook!","alert-error"); });
-		}
-		function createFeedCancel()
-		{
-		}
-		function createFeedExecute(feedId)
-		{
-		}
-		function addTorrentCancel()
-		{
-		}
-		function addTorrentExecute(feedId)
-		{
-		}
-		
-	</script>
 
+		//---- Views sprecific functions ----
+
+		// All feed view:
+		function updateFeedList() {
+			var allFeeds = API.getFeeds({
+				error : function() {
+					notification(
+							"Could load your feeds. Please, try again later.",
+							alerttyle.error).show();
+				},
+				success : function(response) {
+					response = JSON.parse(response);
+					//TODO: load feeds:
+					$("#feedsList > .template").fadeIn();
+
+					notification().hide();
+				}
+			});
+		}
+
+		// Create feed view:
+		function createFeed() {
+			// TODO fish
+			var result = API.createFeed({
+				feed : "",
+				error : function() {
+					notification("Feed couldn't be created.", alertStyle.error)
+							.flash();
+				},
+				success : function() {
+					notification("Feed Created!", alertStyle.success).flash();
+					showView("#userFeedsView");
+				}
+			});
+		}
+		function createFeedCancel() {
+			//TODO: reset form fileds.
+			showView("#userFeedsView");
+		}
+
+		// Add Torrents view:
+		function addTorrent(feedId) {
+			// TODO fish
+			var result = API.addTorrent({
+				feed : feedId,
+				torrent : "",
+				error : function() {
+					notification("Feed couldn't be shared on facebook!",
+							alertStyle.error).flash();
+				},
+				success : function() {
+					notification("Feed shared!", alertStyle.success).flash();
+					showView("#userFeedsView");
+				}
+			});
+		}
+		function addTorrentCancel(feedId) {
+			//TODO: reset form fields.
+			showView("#userFeedsView");
+		}
+	</script>
 </body>
 </html>
