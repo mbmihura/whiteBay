@@ -129,7 +129,7 @@
 	          </div><!-- /.navbar-inner -->
 	        </div>
 		</div>
-		<div id="mainAlert" class="alert text-center" style="display:none"><button type="button" class="close" data-dismiss="alert"><i class="icon-remove"></i></button><span></span></div>
+		<div id="mainAlert" class="alert text-center" style="display:none"> <button type="button" class="close" data-dismiss="alert">&times;</button><span></span></div>
 		<!-- User's Feeds List -->
 		<div id="userFeedsView">
 		<div id="noFeedMsg" class="jumbotron" style="display: none">
@@ -139,10 +139,7 @@
 			<a class="btn btn-large btn-success" href="#">Create Feed</a>
 		</div>
 		<div id="feedsList" class="row-fluid">
-			<div call="loading">
-				Loading feeds...
-			</div>
-			<div class="span4" style="display:none">
+			<div class="span4 template" style="display:none">
 				<h2>Private Feed:</h2>
 				<p>
 					Feed rss url: <a>utntcas.appspot.com/rss/23423</a>
@@ -150,7 +147,7 @@
 				<ul>
 				</ul>
 				<p>
-					<a class="btn" onclick="shareFeed('')" href="#">Share in Facebook! &raquo;</a>
+					<a class="btn" onclick="API.shareFeed('')" href="#">Share in Facebook! &raquo;</a>
 				</p>
 			</div>
 		</div>
@@ -246,6 +243,8 @@
 	<!-- javascript -->
 	<script src="/assets/js/jquery-2.0.2.min.js"></script>
 	<script src="/assets/js/bootstrap.js"></script>
+	<script src="/assets/js/bootstrapExtension.js"></script>
+	<script src="/assets/js/ApiREST.js"></script>
 	<script type="text/javascript">
         // UI Javascript Functions:
 		$(document).ready(function() {
@@ -258,105 +257,99 @@
 					$(this).addClass('active');
 					showView($(this).attr('data-showview'));
 				});
+				// If user comes from a share torrent link
+				var f = function loadAppDisplayingAddTorrentView(torrenturl) {
+					if (torrenturl != null)
+					{
+						//todo: update nav buttons state. remove from $(document).ready()
+						var t = getTorrent(torrenturl);
+						$("#addTorrentTitle").val(t.title);
+						$("#addTorrentUrlInput").val(t.url);
+						if (t.description =! null)
+							$("#addTorrentDesc").val(t.description);
+						showView("addTorrentView");
+					}
+				};
+				
+				<%
+				//TODO excape char avoid XSS
+					String addTorrent = request.getParameter("addTorrent");
+					if (addTorrent != null)
+				    	out.println("f('" + addTorrent +"');");
+					else
+						out.println("updateFeedList();");
+						
+				%>
 			});
-			// If user comes from a share torrent link
-			var t;
-			<%
-				String addTorrent = request.getParameter("addTorrent");
-				if (addTorrent != null)
-			    	out.println("loadAppDisplayingAddTorrentView('" + addTorrent +"');");
-			%>
-			
-			
 		});
+	
+		function notification(msg,type){
+			$('#mainAlert > span').text(msg)
+			return $('#mainAlert').removeClass("alert-block alert-error alert-success alert-info").addClass(type)
+		}
+		
 		function showView(viewId) {
 			$("#userFeedsView").hide();
 			$("#addFeedView").hide();
 			$("#addTorrentView").hide();
 			$(viewId).fadeIn();
 		}
-		function showAlert(msg,type){
-			$('#mainAlert > span').text(msg)
-			$('#mainAlert').addClass(type).show().delay(1200).fadeOut(1000,function() {
-				$('#mainAlert').removeClass(type);
-				});
-		}
-		function loadAppDisplayingAddTorrentView(torrenturl) {
-			if (torrenturl != null)
-			{
-				//todo: update nav buttons state. remove from $(document).ready()
-				var t = getTorrent(torrenturl);
-				$("#addTorrentTitle").val(t.title);
-				$("#addTorrentUrlInput").val(t.url);
-				if (t.description =! null)
-					$("#addTorrentDesc").val(t.description);
-				showView("addTorrentView");
-			}
+		
+		//---- Views sprecific functions ----
+			
+		// All feed view:
+		function updateFeedList()
+		{
+			var allFeeds = API.getFeeds({
+				error: function() { notification("Could load your feeds. Please, try again later.",alerttyle.error).show();},
+				success: function(response) {
+					response = JSON.parse(response);
+					//TODO: load feeds:
+					$("#feedsList > .template").fadeIn();
+					
+					notification().hide();
+				}
+			});
 		}
 		
-		// API CALLS & Feeds, Torrents, Social Forms:
+		// Create feed view:
+		function createFeed()
+		{
+			// TODO fish
+			var result = API.createFeed({
+				feed: "",
+				error: function() { notification("Feed couldn't be created.",alertStyle.error).flash(); },
+				success: function() { 
+					notification("Feed Created!",alertStyle.success).flash();
+					showView("#userFeedsView");
+				}
+			});
+		}
 		function createFeedCancel()
 		{
 			//TODO: reset form fileds.
 			showView("#userFeedsView");
+		}
+
+		// Add Torrents view:
+		function addTorrent(feedId)
+		{
+			// TODO fish
+			var result = API.addTorrent({
+				feed: feedId,
+				torrent: "",
+				error: function() { notification("Feed couldn't be shared on facebook!",alertStyle.error).flash(); },
+				success: function() { 
+					notification("Feed shared!",alertStyle.success).flash();
+					showView("#userFeedsView");
+				}
+			});	
 		}
 		function addTorrentCancel(feedId)
 		{
 			//TODO: reset form fields.
 			showView("#userFeedsView");
 		}
-
-		
-		function getTorrent(feedId)
-		{
-			//TODO: finish
-			$.ajax({
-				  url: '/feed/' + feedId + "/publish",
-				  type: 'POST'})
-				  .done(function(data) { return data; })
-				  .fail(function() { showAlert("Feed couldn't be shared on facebook!","alert-error"); });
-		}
-		function addTorrent(feedId)
-		{
-			//TODO: finish
-			$.ajax({
-				  url: '/feed/' + feedId + "/publish",
-				  type: 'POST'})
-				  .done(function() { showAlert("Feed shared!","alert-success"); })
-				  .fail(function() { showAlert("Feed couldn't be shared on facebook!","alert-error"); });
-			showView("#userFeedsView");
-		}
-		function createFeed()
-		{
-			//TODO: finish
-			$.ajax({
-				  url: '/feed/' + feedId + "/publish",
-				  type: 'POST'})
-				  .done(function() { showAlert("Feed shared!","alert-success"); })
-				  .fail(function() { showAlert("Feed couldn't be shared on facebook!","alert-error"); });
-			showView("#userFeedsView");
-			
-		}
-		function getAllFeeds()
-		{
-			//TODO: finish
-			$.ajax({
-				  url: '/feed/' + feedId + "/publish",
-				  type: 'POST'})
-				  .done(function() { showAlert("Feed shared!","alert-success"); })
-				  .fail(function() { showAlert("Feed couldn't be shared on facebook!","alert-error"); });
-		}
-		function shareFeed(feedId)
-		{
-			//TODO: finish
-			$.ajax({
-				  url: '/feed/' + feedId + "/publish",
-				  type: 'POST'})
-				  .done(function() { showAlert("Feed shared!","alert-success"); })
-				  .fail(function() { showAlert("Feed couldn't be shared on facebook!","alert-error"); });
-		}
-		
 	</script>
-
 </body>
 </html>
