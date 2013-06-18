@@ -130,55 +130,57 @@
 	        </div>
 		</div>
 		<div id="mainAlert" class="alert text-center" style="display:none"></div>
+		<!-- Add Auth View -->
+		<div id="authView" style="display: none">Auth option: signin with fb, allow app</div>
 		<!-- User's Feeds List -->
 		<div id="userFeedsView">
-		<div id="noFeedMsg" class="jumbotron" style="display: none">
-			<h1>Create a Feed!</h1>
-			<p class="lead">You have no feed yet. Create a feed to share it
-				with your friends.</p>
-<!-- 			<a class="btn btn-large btn-success" href="#">Create Feed</a> -->
-		</div>
-		<div id="feedsList" class="row-fluid">
-			<div class="span4">
-				<h2>Private Feed:</h2>
-				<p>
-					Feed rss url: <a>utntcas.appspot.com/rss/23423</a>
-				</p>
-				<ul>
-					<li>torrent1</li>
-					<li>torrent1</li>
-				</ul>
-				<p>
-					<a class="btn" onclick="shareFeed('1')" href="#">Share in Facebook! &raquo;</a>
-				</p>
+			<div id="noFeedMsg" class="jumbotron" style="display: none">
+				<h1>Create a Feed!</h1>
+				<p class="lead">You have no feed yet. Create a feed to share it
+					with your friends.</p>
+	<!-- 			<a class="btn btn-large btn-success" href="#">Create Feed</a> -->
 			</div>
-			<div class="span4">
-				<h2>Feed 2</h2>
-				<p>
-					Feed rss url: <a>utntcas.appspot.com/rss/68747</a>
-				</p>
-				<ul>
-					<li>torrent1</li>
-					<li>torrent1</li>
-				</ul>
-				<p>
-					<a class="btn" onclick="shareFeed('2')" href="#">Share in Facebook! &raquo;</a>
-				</p>
+			<div id="feedsList" class="row-fluid">
+				<div class="span4">
+					<h2>Private Feed:</h2>
+					<p>
+						Feed rss url: <a>utntcas.appspot.com/rss/23423</a>
+					</p>
+					<ul>
+						<li>torrent1</li>
+						<li>torrent1</li>
+					</ul>
+					<p>
+						<a class="btn" onclick="shareFeed('1')" href="#">Share in Facebook! &raquo;</a>
+					</p>
+				</div>
+				<div class="span4">
+					<h2>Feed 2</h2>
+					<p>
+						Feed rss url: <a>utntcas.appspot.com/rss/68747</a>
+					</p>
+					<ul>
+						<li>torrent1</li>
+						<li>torrent1</li>
+					</ul>
+					<p>
+						<a class="btn" onclick="shareFeed('2')" href="#">Share in Facebook! &raquo;</a>
+					</p>
+				</div>
+				<div class="span4">
+					<h2>Feed 3</h2>
+					<p>
+						Feed rss url: <a>utntcas.appspot.com/rss/26523</a>
+					</p>
+					<ul>
+						<li>torrent1</li>
+						<li>torrent1</li>
+					</ul>
+					<p>
+						<a class="btn" onclick="shareFeed('3')" href="#">Share in Facebook! &raquo;</a>
+					</p>
+				</div>
 			</div>
-			<div class="span4">
-				<h2>Feed 3</h2>
-				<p>
-					Feed rss url: <a>utntcas.appspot.com/rss/26523</a>
-				</p>
-				<ul>
-					<li>torrent1</li>
-					<li>torrent1</li>
-				</ul>
-				<p>
-					<a class="btn" onclick="shareFeed('3')" href="#">Share in Facebook! &raquo;</a>
-				</p>
-			</div>
-		</div>
 		</div>
 	
 		<!-- Add Feed View -->
