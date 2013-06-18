@@ -139,43 +139,18 @@
 			<a class="btn btn-large btn-success" href="#">Create Feed</a>
 		</div>
 		<div id="feedsList" class="row-fluid">
-			<div class="span4">
+			<div call="loading">
+				Loading feeds...
+			</div>
+			<div class="span4" style="display:none">
 				<h2>Private Feed:</h2>
 				<p>
 					Feed rss url: <a>utntcas.appspot.com/rss/23423</a>
 				</p>
 				<ul>
-					<li>torrent1</li>
-					<li>torrent1</li>
 				</ul>
 				<p>
-					<a class="btn" onclick="shareFeed('1')" href="#">Share in Facebook! &raquo;</a>
-				</p>
-			</div>
-			<div class="span4">
-				<h2>Feed 2</h2>
-				<p>
-					Feed rss url: <a>utntcas.appspot.com/rss/68747</a>
-				</p>
-				<ul>
-					<li>torrent1</li>
-					<li>torrent1</li>
-				</ul>
-				<p>
-					<a class="btn" onclick="shareFeed('2')" href="#">Share in Facebook! &raquo;</a>
-				</p>
-			</div>
-			<div class="span4">
-				<h2>Feed 3</h2>
-				<p>
-					Feed rss url: <a>utntcas.appspot.com/rss/26523</a>
-				</p>
-				<ul>
-					<li>torrent1</li>
-					<li>torrent1</li>
-				</ul>
-				<p>
-					<a class="btn" onclick="shareFeed('3')" href="#">Share in Facebook! &raquo;</a>
+					<a class="btn" onclick="shareFeed('')" href="#">Share in Facebook! &raquo;</a>
 				</p>
 			</div>
 		</div>
