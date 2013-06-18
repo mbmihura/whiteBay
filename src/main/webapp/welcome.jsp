@@ -183,8 +183,8 @@
 				</div>
 			</div>
 			<div class="form-actions">
-				<button type="submit" onclick="createFeedCancel();" class="btn btn-primary">Create Feed</button>
-				<button type="button" class="btn" onclick="createFeed();">Cancel</button>
+				<button type="submit" onclick="createFeed();" class="btn btn-primary">Create Feed</button>
+				<button type="button" class="btn" onclick="createFeedCancel();">Cancel</button>
 			</div>
 		</form>
 		<!-- Add Torrent to Feed View -->
