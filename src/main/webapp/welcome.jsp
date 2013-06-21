@@ -251,30 +251,29 @@
 					$(this).addClass('active');
 					showView($(this).attr('data-showview'));
 				});
-				// If user comes from a share torrent link
-				var f = function loadAppDisplayingAddTorrentView(torrenturl) {
-					if (torrenturl != null)
-					{
-						//todo: update nav buttons state. remove from $(document).ready()
-						var t = getTorrent(torrenturl);
-						$("#addTorrentTitle").val(t.title);
-						$("#addTorrentUrlInput").val(t.url);
-						if (t.description =! null)
-							$("#addTorrentDesc").val(t.description);
-						showView("addTorrentView");
-					}
-				};
-				
-				<%
-				//TODO excape char avoid XSS
-					String addTorrent = request.getParameter("addTorrent");
-					if (addTorrent != null)
-				    	out.println("f('" + addTorrent +"');");
-					else
-						out.println("updateFeedList();");
-						
-				%>
 			});
+			
+			updateFeedList();
+			// If user comes from a share torrent link
+			var f = function loadAppDisplayingAddTorrentView(torrenturl) {
+				if (torrenturl != null)
+				{
+					//todo: update nav buttons state. remove from $(document).ready()
+					var t = getTorrent(torrenturl);
+					$("#addTorrentTitle").val(t.title);
+					$("#addTorrentUrlInput").val(t.url);
+					if (t.description =! null)
+						$("#addTorrentDesc").val(t.description);
+					showView("addTorrentView");
+				}
+			};
+			
+			<%
+			//TODO excape char avoid XSS
+				String addTorrent = request.getParameter("addTorrent");
+				if (addTorrent != null)
+			    	out.println("f('" + addTorrent +"');");
+			%>
 		});
 	
 		function notification(msg,type){
