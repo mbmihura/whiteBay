@@ -29,9 +29,11 @@ public class SocialServlet extends HttpServlet {
 	     */
 	     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 	            PrintWriter out = response.getWriter();
-	            UrlFeedParserService parser = new UrlFeedParserService(request.getPathInfo());
+	            String[] urlParams = UrlParserService.parse(request.getPathInfo(), 3);
 	            
-	            if(parser.hasUser() && parser.hasFeed() && parser.hasTorrent())
+	            if(urlParams[0] != null && !urlParams[0].isEmpty()
+	            		&& urlParams[1] != null && !urlParams[1].isEmpty()
+	            		&& urlParams[2] != null && !urlParams[2].isEmpty())
 	            {
 	         // IF (exist in DB) {
 		            try {
@@ -60,7 +62,8 @@ public class SocialServlet extends HttpServlet {
 	      * @see HttpServlet#doPost(HttpServletRequest, HttpServletResponse)
 	      */
 	     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-	     	UrlFeedParserService parser = new UrlFeedParserService(request.getPathInfo());
+	     	String[] urlParams = UrlParserService.parse(request.getPathInfo(), 3);
+
 	     	
 	     	PrintWriter out = response.getWriter(); 
 

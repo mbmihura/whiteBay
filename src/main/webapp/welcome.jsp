@@ -161,17 +161,17 @@
 			<div class="control-group">
 				<label class="control-label" for="feedTitleInput">Title: </label>
 				<div class="controls">
-					<input type="text" id="titleInput" placeholder="feed's title...">
+					<input type="text" id="feedTitleInput" placeholder="feed's title...">
 				</div>
 			</div>
 			<div class="control-group">
 				<label class="control-label" for="feedLinkInput">Link: </label>
 				<div class="controls">
-					<input type="text" id="linkInput" placeholder="feed's link...">
+					<input type="text" id="feedLinkInput" placeholder="feed's link...">
 				</div>
 			</div>
 			<div class="control-group">
-				<label class="control-label" for="descInput">Description: </label>
+				<label class="control-label" for="feedDescInput">Description: </label>
 				<div class="controls">
 					<textarea rows="3" id="feedDescInput" placeholder="feed's description..."></textarea>
 				</div>
@@ -186,9 +186,9 @@
 			style="display: none">
 			<legend>Add torrent to feed</legend>
 			<div class="control-group">
-				<label class="control-label" for="addTorrentTitle">Title: </label>
+				<label class="control-label" for="addTorrentTitleInput">Title: </label>
 				<div class="controls">
-					<input type="text" id="addTorrentTitle" placeholder="torrent's title...">
+					<input type="text" id="addTorrentTitleInput" placeholder="torrent's title...">
 				</div>
 			</div>
 			<div class="control-group">
@@ -198,9 +198,9 @@
 				</div>
 			</div>
 			<div class="control-group">
-				<label class="control-label" for="addTorrentDesc">Description: </label>
+				<label class="control-label" for="addTorrentDescTxtarea">Description: </label>
 				<div class="controls">
-					<textarea rows="3" id="addTorrentDesc" placeholder="torrent's description..."></textarea>
+					<textarea rows="3" id="addTorrentDescTxtarea" placeholder="torrent's description..."></textarea>
 				</div>
 			</div>
 			<div class="control-group">
@@ -325,7 +325,8 @@
 			//Posible cient-side vaidations
 			API.createFeed({
 				feed: {
-					link:$("#feedLinkInput").val(),
+					title: $("#feedTitleInput").val(),
+					link: $("#feedLinkInput").val(),
 					description: $("#feedDescInput").val()
 				},
 				error: function() { notification("Feed couldn't be created.",alertStyle.error).flash(); },
@@ -365,11 +366,11 @@
 		}
 		function addTorrentCancel(feedId)
 		{
-			$("#addTorrentFeedSelect").val("");
+			$("#addTorrentTitleInput").val("");
 			$("#addTorrentLinkInput").val("");
-			$("#addTorrentDesc").val("");
+			$("#addTorrentDescTxtarea").val("");
 			$("#addTorrentFeedSelect").val("");
-			$("#feedShareInFb").prop('checked',false);
+			$("#addTorrentShareInFb").prop('checked',false);
 			showView("#userFeedsView");
 		}
 	</script>

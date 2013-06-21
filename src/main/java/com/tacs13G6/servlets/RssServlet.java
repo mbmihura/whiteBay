@@ -33,12 +33,13 @@ public class RssServlet extends HttpServlet {
      */
      protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     	 PrintWriter out = response.getWriter(); 
-         UrlFeedParserService parser = new UrlFeedParserService(request.getPathInfo());
-
-         if (parser.hasUser() && parser.hasFeed())
+      
+         String[] urlParams = UrlParserService.parse(request.getPathInfo(), 2);
+         
+         if (urlParams[0] != null && !urlParams[0].isEmpty() && urlParams[1] != null && !urlParams[1].isEmpty())
          {
-             String userId = parser.getUser();
-             String feedId = parser.getFeed();
+             String userId = urlParams[0];
+             String feedId = urlParams[1];
              try {
 				out.println(Feed.find(feedId, userId).toXML());
 		        response.setContentType("application/rss+xml"); 
