@@ -141,8 +141,9 @@
 		<div id="feedsList" class="row-fluid">
 			<div class="span4 template" style="display:none">
 				<h2>Private Feed:</h2>
+				<p class="description" style="font-style:italic"></p>
 				<p>
-					Feed rss url: <a>utntcas.appspot.com/rss/23423</a>
+					Feed rss url: <a class="feedLink">utntcas.appspot.com/rss/23423</a>
 				</p>
 				<ul>
 				</ul>
@@ -158,13 +159,13 @@
 			style="display: none">
 			<legend>New Feed</legend>
 			<div class="control-group">
-				<label class="control-label" for="titleInput">Title: </label>
+				<label class="control-label" for="feedTitleInput">Title: </label>
 				<div class="controls">
 					<input type="text" id="titleInput" placeholder="feed's title...">
 				</div>
 			</div>
 			<div class="control-group">
-				<label class="control-label" for="linkInput">Link: </label>
+				<label class="control-label" for="feedLinkInput">Link: </label>
 				<div class="controls">
 					<input type="text" id="linkInput" placeholder="feed's link...">
 				</div>
@@ -172,14 +173,7 @@
 			<div class="control-group">
 				<label class="control-label" for="descInput">Description: </label>
 				<div class="controls">
-					<textarea rows="3" id="descInput" placeholder="feed's description..."></textarea>
-				</div>
-			</div>
-			<div class="control-group">
-				<div class="controls">
-					<label class="checkbox"> <input type="checkbox">
-						Share in Facebook!
-					</label>
+					<textarea rows="3" id="feedDescInput" placeholder="feed's description..."></textarea>
 				</div>
 			</div>
 			<div class="form-actions">
@@ -198,9 +192,9 @@
 				</div>
 			</div>
 			<div class="control-group">
-				<label class="control-label" for="addTorrentUrlInput">Url: </label>
+				<label class="control-label" for="addTorrentLinkInput">Url: </label>
 				<div class="controls">
-					<input type="text" id="addTorrentUrlInput" placeholder="torrent's url...">
+					<input type="text" id="addTorrentLinkInput" placeholder="torrent's url...">
 				</div>
 			</div>
 			<div class="control-group">
@@ -222,7 +216,7 @@
 			</div>
 			<div class="control-group">
 				<div class="controls">
-					<label class="checkbox"> <input type="checkbox">
+					<label class="checkbox"> <input id="addTorrentShareInFb" type="checkbox">
 						Share in Facebook!
 					</label>
 				</div>
@@ -296,17 +290,30 @@
 		}
 		
 		//---- Views sprecific functions ----
-			
+		var feedsList;
 		// All feed view:
 		function updateFeedList()
 		{
-			var allFeeds = API.getFeeds({
-				error: function() { notification("Could load your feeds. Please, try again later.",alerttyle.error).show();},
+			API.getFeeds({
+				error: function() { notification("Could load your feeds. Please, try again later.",alertStyle.error).show();},
 				success: function(response) {
-					response = JSON.parse(response);
+					$("#feedsList > .aFeed").remove()
+					feedsList = JSON.parse(response);
 					//TODO: load feeds:
-					$("#feedsList > .template").fadeIn();
-					
+					$.each( feedsList, function( i, item ) {
+						var feed = $("#feedsList > .template")
+							.clone()
+							.appendTo( "#feedsList" )
+							.removeClass("template")
+							.addClass("aFeed")
+							.fadeIn();
+						feed.find("h2").text(item.title);
+						feed.find(".feedLink").text(item.link);
+						feed.find(".description").text(item.description);
+						//feed.find("ul").text(item.link);
+						
+					      
+					});				
 					notification().hide();
 				}
 			});
@@ -315,9 +322,12 @@
 		// Create feed view:
 		function createFeed()
 		{
-			// TODO fish
-			var result = API.createFeed({
-				feed: "",
+			//Posible cient-side vaidations
+			API.createFeed({
+				feed: {
+					link:$("#feedLinkInput").val(),
+					description: $("#feedDescInput").val()
+				},
 				error: function() { notification("Feed couldn't be created.",alertStyle.error).flash(); },
 				success: function() { 
 					notification("Feed Created!",alertStyle.success).flash();
@@ -327,27 +337,39 @@
 		}
 		function createFeedCancel()
 		{
-			//TODO: reset form fileds.
+			$("#feedTitleInput").val("");
+			$("#feedLinkInput").val("");
+			$("#feedDescInput").val("");
 			showView("#userFeedsView");
 		}
 
 		// Add Torrents view:
-		function addTorrent(feedId)
+		function addTorrent()
 		{
-			// TODO fish
+			//Posible cient-side vaidations
+			var feed = $("#addTorrentFeedSelect").val();
 			var result = API.addTorrent({
-				feed: feedId,
-				torrent: "",
-				error: function() { notification("Feed couldn't be shared on facebook!",alertStyle.error).flash(); },
+				feed: feed,
+				torrent: {
+					link:$("#addTorrentLinkInput").val(),
+					description: $("#addTorrentDesc").val(),
+					description: $("#addTorrentFeedSelect").val(),
+					shareInFb: $("#addTorrentShareInFb").is(":checked") 
+				},
+				error: function() { notification("Torrent couldn't be save!",alertStyle.error).flash(); },
 				success: function() { 
-					notification("Feed shared!",alertStyle.success).flash();
+					notification("Torrent added to " + feed + "!",alertStyle.success).flash();
 					showView("#userFeedsView");
 				}
 			});	
 		}
 		function addTorrentCancel(feedId)
 		{
-			//TODO: reset form fields.
+			$("#addTorrentFeedSelect").val("");
+			$("#addTorrentLinkInput").val("");
+			$("#addTorrentDesc").val("");
+			$("#addTorrentFeedSelect").val("");
+			$("#feedShareInFb").prop('checked',false);
 			showView("#userFeedsView");
 		}
 	</script>
