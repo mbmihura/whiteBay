@@ -351,9 +351,9 @@
 			var result = API.addTorrent({
 				feed: feed,
 				torrent: {
+					title:$("#addTorrentTitleInput").val(),
 					link:$("#addTorrentLinkInput").val(),
 					description: $("#addTorrentDesc").val(),
-					description: $("#addTorrentFeedSelect").val(),
 					shareInFb: $("#addTorrentShareInFb").is(":checked") 
 				},
 				error: function() { notification("Torrent couldn't be save!",alertStyle.error).flash(); },

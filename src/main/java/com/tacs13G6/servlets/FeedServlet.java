@@ -34,6 +34,7 @@ import com.tacs13G6.models.Feed;
 import com.tacs13G6.models.MockFeed;
 import com.tacs13G6.models.Torrent;
 import com.tacs13G6.models.exceptions.FeedMalformedException;
+import com.tacs13G6.models.exceptions.TorrentMalformedException;
 import com.tacs13G6.models.exceptions.TorrentTitleAlreadyExistsInFeedException;
 
 /**
@@ -142,6 +143,8 @@ public class FeedServlet extends HttpServlet {
             	String title = request.getParameter("title");
                 String link = request.getParameter("link");
                 String description = request.getParameter("description");
+                boolean shareInFb = request.getParameter("shareInFb").toLowerCase() == "true";
+                
 	            try {
 	   				Feed a = Feed.find(feedId,userId);
 	   				boolean titleAlreadyExists = false;
@@ -153,14 +156,17 @@ public class FeedServlet extends HttpServlet {
 	   				if (titleAlreadyExists)
 	   				{
 	   					throw new TorrentTitleAlreadyExistsInFeedException("Feed already contains a torrent with title "+ title);
-	   				} else
-	   				{
+	   				} else {
 	   					a.getTorrents().add(new Torrent(title, description, link));
 	   					a.save();
 	   					response.setStatus(HttpServletResponse.SC_OK);
 	                }
-	   			} catch (FeedMalformedException e) {
+	   				if (shareInFb){
+	   					//TODO: share in facebook;
+	   				}
+	   			} catch (FeedMalformedException | TorrentMalformedException e) {
 	   				e.printStackTrace();
+	   				//TODO: refactor
 	   				response.getWriter().println(e.getMessage());
 	   				response.getWriter().println(feedId);
 	   				response.getWriter().println(link);
