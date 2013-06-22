@@ -3,6 +3,7 @@ package com.tacs13G6.models;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 import java.util.regex.Pattern;
 
 import java.io.Console;
@@ -30,6 +31,7 @@ import com.google.appengine.api.datastore.Query;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.tacs13G6.models.exceptions.FeedMalformedException;
+import com.tacs13G6.utils.Token;
 
 public class Feed {
 	public static List<Feed> find(String userId) {
@@ -40,26 +42,23 @@ public class Feed {
 				Entity.KEY_RESERVED_PROPERTY,
 				Query.FilterOperator.GREATER_THAN, userKey);
 
-		List<Entity> results = datastore.prepare(mediaQuery).asList(
-				FetchOptions.Builder.withDefaults());
+		List<Entity> results = datastore.prepare(mediaQuery).asList(FetchOptions.Builder.withDefaults());
 		List<Feed> userFeeds = new ArrayList<Feed>();
 		for (Entity feedEntity : results) {
 			String eTitle = (String) feedEntity.getProperty("title");
 			String eLink = (String) feedEntity.getProperty("link");
-			String eDescription = (String) feedEntity
-					.getProperty("description");
+			String eDescription = (String) feedEntity.getProperty("description");
 			Date ePubDate = (Date) feedEntity.getProperty("pubDate");
 			String eUSerId = (String) feedEntity.getProperty("userId");
 			String eToken = (String) feedEntity.getProperty("token");
 			try {
 				Feed feed;
 				//if (eToken != null)
-					feed = new Feed(eTitle, eLink, eDescription, ePubDate, userId);
+					feed = new Feed(eTitle, eLink, eDescription, ePubDate, userId, eToken);
 				//else
 					//feed = new FeedPrivate(eTitle, eLink, eDescription, ePubDate, userId, eToken);
 				Gson gson = new Gson();
-				List<String> list = (List<String>) feedEntity
-						.getProperty("torrents");
+				List<String> list = (List<String>) feedEntity.getProperty("torrents");
 				// Necesario, ya que aunque se carga durante el metodo save(),
 				// si esta vacio datastore almacena nulo en ves de una lista
 				// vacia.
@@ -98,7 +97,7 @@ public class Feed {
 		String eToken = (String) feedEntity.getProperty("token");
 
 		try {
-			Feed feed = new Feed(title, eLink, eDescription, ePubDate, userId);
+			Feed feed = new Feed(title, eLink, eDescription, ePubDate, userId, eToken);
 			Gson gson = new Gson();
 			List<String> list = (List<String>) feedEntity
 					.getProperty("torrents");
@@ -121,25 +120,25 @@ public class Feed {
 
 	}
 
-	public static Feed createFeed(String title, String link,
-			String description, String userId) throws FeedMalformedException {
-		return new Feed(title, link, description, new Date(), userId);
+	public static Feed createFeed(String title, String link, String description, String userId) throws FeedMalformedException {
+		return new Feed(title, link, description, new Date(), userId, null);
 	}
 
+	public static Feed createPrivateFeed(String title, String link, String description, String userId) throws FeedMalformedException {	
+		return new Feed(title, link, description, new Date(), userId, Token.generate());
+	}
+	
 	final String userId;
 	final String title;
 	final String link;
 	final String description;
 	final Date pubDate;
+	final String token;
 	final List<Torrent> torrents = new ArrayList<Torrent>();
 
-	protected Feed(String title, String link, String description,
-			Date publicationDate, String userId) throws FeedMalformedException {
-		if (title == null || title.isEmpty() || description == null
-				|| description.isEmpty() || link == null || link.isEmpty())
-			throw new FeedMalformedException(
-					"Title, description and link are requiered: " + title
-							+ description + link);
+	protected Feed(String title, String link, String description,Date publicationDate, String userId, String token) throws FeedMalformedException {
+		if (title == null || title.isEmpty() || description == null	|| description.isEmpty() || link == null || link.isEmpty())
+			throw new FeedMalformedException("Title, description and link are requiered: " + title + description + link);
 		Pattern p = Pattern.compile("^[A-Za-z0-9_]+$");
 		if (!p.matcher(title).find())
 			throw new FeedMalformedException("Title should be alphanumeric");
@@ -148,7 +147,7 @@ public class Feed {
 		this.description = description;
 		this.pubDate = publicationDate;
 		this.userId = userId;
-
+		this.token = token;
 	}
 
 	public String getTitle() {
@@ -184,6 +183,7 @@ public class Feed {
 		ent.setProperty("link", this.link);
 		ent.setProperty("description", this.description);
 		ent.setProperty("pubDate", this.pubDate);
+		ent.setProperty("token", this.token);
 		List<String> list = new ArrayList<String>();
 		for (Torrent t : this.torrents) {
 			list.add(t.toJson());
@@ -286,6 +286,9 @@ public class Feed {
 	}
 
 	public boolean isTokenValid(String token) {
-		return true;
+		return token == null || this.token.equals(token);
+	}
+	public String getToken() {
+		return this.token;
 	}
 }
