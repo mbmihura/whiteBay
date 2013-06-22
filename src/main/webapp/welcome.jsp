@@ -150,8 +150,9 @@ body {
 			<div id="feedsList" class="row-fluid">
 				<div class="span4 template" style="display: none">
 					<h2>Private Feed:</h2>
+					<p class="description" style="font-style: italic"></p>
 					<p>
-						Feed rss url: <a>utntcas.appspot.com/rss/23423</a>
+						Feed rss url: <a class="feedLink">utntcas.appspot.com/rss/23423</a>
 					</p>
 					<ul>
 					</ul>
@@ -168,29 +169,24 @@ body {
 			style="display: none">
 			<legend>New Feed</legend>
 			<div class="control-group">
-				<label class="control-label" for="titleInput">Title: </label>
+				<label class="control-label" for="feedTitleInput">Title: </label>
 				<div class="controls">
-					<input type="text" id="titleInput" placeholder="feed's title...">
+					<input type="text" id="feedTitleInput"
+						placeholder="feed's title...">
 				</div>
 			</div>
 			<div class="control-group">
-				<label class="control-label" for="linkInput">Link: </label>
+				<label class="control-label" for="feedLinkInput">Link: </label>
 				<div class="controls">
-					<input type="text" id="linkInput" placeholder="feed's link...">
+					<input type="text" id="feedLinkInput" placeholder="feed's link...">
 				</div>
 			</div>
 			<div class="control-group">
-				<label class="control-label" for="descInput">Description: </label>
+				<label class="control-label" for="feedDescInput">Description:
+				</label>
 				<div class="controls">
-					<textarea rows="3" id="descInput"
+					<textarea rows="3" id="feedDescInput"
 						placeholder="feed's description..."></textarea>
-				</div>
-			</div>
-			<div class="control-group">
-				<div class="controls">
-					<label class="checkbox"> <input type="checkbox">
-						Share in Facebook!
-					</label>
 				</div>
 			</div>
 			<div class="form-actions">
@@ -204,24 +200,26 @@ body {
 			style="display: none">
 			<legend>Add torrent to feed</legend>
 			<div class="control-group">
-				<label class="control-label" for="addTorrentTitle">Title: </label>
+				<label class="control-label" for="addTorrentTitleInput">Title:
+				</label>
 				<div class="controls">
-					<input type="text" id="addTorrentTitle"
+					<input type="text" id="addTorrentTitleInput"
 						placeholder="torrent's title...">
 				</div>
 			</div>
 			<div class="control-group">
-				<label class="control-label" for="addTorrentUrlInput">Url: </label>
+				<label class="control-label" for="addTorrentLinkInput">Url:
+				</label>
 				<div class="controls">
-					<input type="text" id="addTorrentUrlInput"
+					<input type="text" id="addTorrentLinkInput"
 						placeholder="torrent's url...">
 				</div>
 			</div>
 			<div class="control-group">
-				<label class="control-label" for="addTorrentDesc">Description:
+				<label class="control-label" for="addTorrentDescTxtarea">Description:
 				</label>
 				<div class="controls">
-					<textarea rows="3" id="addTorrentDesc"
+					<textarea rows="3" id="addTorrentDescTxtarea"
 						placeholder="torrent's description..."></textarea>
 				</div>
 			</div>
@@ -239,8 +237,8 @@ body {
 			</div>
 			<div class="control-group">
 				<div class="controls">
-					<label class="checkbox"> <input type="checkbox">
-						Share in Facebook!
+					<label class="checkbox"> <input id="addTorrentShareInFb"
+						type="checkbox"> Share in Facebook!
 					</label>
 				</div>
 			</div>
@@ -269,56 +267,35 @@ body {
 				.ready(
 						function() {
 							//Init Nav bar behavior
-							$("#mainNav")
-									.children()
-									.each(
-											function() {
-												$(this)
-														.click(
-																function() {
-																	$(
-																			"#mainNav")
-																			.children()
-																			.each(
-																					function() {
-																						$(
-																								this)
-																								.removeClass(
-																										'active');
-																					});
-																	$(this)
-																			.addClass(
-																					'active');
-																	showView($(
-																			this)
-																			.attr(
-																					'data-showview'));
-																});
-												// If user comes from a share torrent link
-												var f = function loadAppDisplayingAddTorrentView(
-														torrenturl) {
-													if (torrenturl != null) {
-														//todo: update nav buttons state. remove from $(document).ready()
-														var t = getTorrent(torrenturl);
-														$("#addTorrentTitle")
-																.val(t.title);
-														$("#addTorrentUrlInput")
-																.val(t.url);
-														if (t.description = !null)
-															$("#addTorrentDesc")
-																	.val(
-																			t.description);
-														showView("addTorrentView");
-													}
-												};
+							$("#mainNav").children().each(function() {
+								$(this).click(function() {
+									$("#mainNav").children().each(function() {
+										$(this).removeClass('active');
+									});
+									$(this).addClass('active');
+									showView($(this).attr('data-showview'));
+								});
+							});
+
+							updateFeedList();
+							// If user comes from a share torrent link
+							var f = function loadAppDisplayingAddTorrentView(
+									torrenturl) {
+								if (torrenturl != null) {
+									//todo: update nav buttons state. remove from $(document).ready()
+									var t = getTorrent(torrenturl);
+									$("#addTorrentTitle").val(t.title);
+									$("#addTorrentUrlInput").val(t.url);
+									if (t.description = !null)
+										$("#addTorrentDesc").val(t.description);
+									showView("addTorrentView");
+								}
+							};
 	<%//TODO excape char avoid XSS
 			String addTorrent = request.getParameter("addTorrent");
 			if (addTorrent != null)
-				out.println("f('" + addTorrent + "');");
-			else
-				out.println("updateFeedList();");%>
+				out.println("f('" + addTorrent + "');");%>
 		});
-						});
 
 		function notification(msg, type) {
 			$('#mainAlert > span').text(msg)
@@ -335,20 +312,29 @@ body {
 		}
 
 		//---- Views sprecific functions ----
-
+		var feedsList;
 		// All feed view:
 		function updateFeedList() {
-			var allFeeds = API.getFeeds({
+			API.getFeeds({
 				error : function() {
 					notification(
 							"Could load your feeds. Please, try again later.",
-							alerttyle.error).show();
+							alertStyle.error).show();
 				},
 				success : function(response) {
-					response = JSON.parse(response);
+					$("#feedsList > .aFeed").remove()
+					feedsList = JSON.parse(response);
 					//TODO: load feeds:
-					$("#feedsList > .template").fadeIn();
+					$.each(feedsList, function(i, item) {
+						var feed = $("#feedsList > .template").clone()
+								.appendTo("#feedsList").removeClass("template")
+								.addClass("aFeed").fadeIn();
+						feed.find("h2").text(item.title);
+						feed.find(".feedLink").text(item.link);
+						feed.find(".description").text(item.description);
+						//feed.find("ul").text(item.link);
 
+					});
 					notification().hide();
 				}
 			});
@@ -356,9 +342,13 @@ body {
 
 		// Create feed view:
 		function createFeed() {
-			// TODO fish
-			var result = API.createFeed({
-				feed : "",
+			//Posible cient-side vaidations
+			API.createFeed({
+				feed : {
+					title : $("#feedTitleInput").val(),
+					link : $("#feedLinkInput").val(),
+					description : $("#feedDescInput").val()
+				},
 				error : function() {
 					notification("Feed couldn't be created.", alertStyle.error)
 							.flash();
@@ -369,29 +359,44 @@ body {
 				}
 			});
 		}
+
 		function createFeedCancel() {
-			//TODO: reset form fileds.
+			$("#feedTitleInput").val("");
+			$("#feedLinkInput").val("");
+			$("#feedDescInput").val("");
 			showView("#userFeedsView");
 		}
 
 		// Add Torrents view:
-		function addTorrent(feedId) {
-			// TODO fish
+		function addTorrent() {
+			//Posible cient-side vaidations
+			var feed = $("#addTorrentFeedSelect").val();
 			var result = API.addTorrent({
-				feed : feedId,
-				torrent : "",
+				feed : feed,
+				torrent : {
+					title : $("#addTorrentTitleInput").val(),
+					link : $("#addTorrentLinkInput").val(),
+					description : $("#addTorrentDesc").val(),
+					shareInFb : $("#addTorrentShareInFb").is(":checked")
+				},
 				error : function() {
-					notification("Feed couldn't be shared on facebook!",
-							alertStyle.error).flash();
+					notification("Torrent couldn't be save!", alertStyle.error)
+							.flash();
 				},
 				success : function() {
-					notification("Feed shared!", alertStyle.success).flash();
+					notification("Torrent added to " + feed + "!",
+							alertStyle.success).flash();
 					showView("#userFeedsView");
 				}
 			});
 		}
+
 		function addTorrentCancel(feedId) {
-			//TODO: reset form fields.
+			$("#addTorrentTitleInput").val("");
+			$("#addTorrentLinkInput").val("");
+			$("#addTorrentDescTxtarea").val("");
+			$("#addTorrentFeedSelect").val("");
+			$("#addTorrentShareInFb").prop('checked', false);
 			showView("#userFeedsView");
 		}
 	</script>

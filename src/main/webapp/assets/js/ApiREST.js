@@ -2,7 +2,7 @@ API = {
 	getFeeds: function(params)
 	{
 		$.ajax({
-		  url: '/feeds/mbmihura/',
+		  url: '/feeds',
 		  type: 'GET',
 		  success: params.success,
 		  error: params.error
@@ -11,9 +11,9 @@ API = {
 	createFeed: function(params)
 	{	
 		$.ajax({
-			  url: '/feeds/mbmihura/b',
+			  url: '/feeds/' + params.feed.title,
 			  type: 'PUT',
-			  data: params.feed,
+			  data: {link: params.feed.link, description: params.feed.description},
 			  success: params.success,
 			  error: params.error
 			});
@@ -21,20 +21,20 @@ API = {
 	addTorrent: function(params)
 	{
 		$.ajax({
-			  url: '/feeds/mbmihura/' + params.feed,
+			  url: '/feeds/' + params.feed,
 			  type: 'POST',
 			  data: params.torrent,
 			  success: params.success,
 			  error: params.error
 			});
 	},
-	shareFeed: function()
+	shareFeed: function(params)
 	{
 		$.ajax({
-			  url: '/social/b',
+			  url: '/social/' + params.feed,
 			  type: 'POST',
-			  success: callback.success,
-			  error: callback.error
+			  success: params.success,
+			  error: params.error
 			});	
 	}
 }
