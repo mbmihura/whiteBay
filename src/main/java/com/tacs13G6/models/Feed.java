@@ -53,10 +53,10 @@ public class Feed {
 			String eToken = (String) feedEntity.getProperty("token");
 			try {
 				Feed feed;
-				if (eToken != null)
+				//if (eToken != null)
 					feed = new Feed(eTitle, eLink, eDescription, ePubDate, userId);
-				else
-					feed = new FeedPrivate(eTitle, eLink, eDescription, ePubDate, userId, eToken);
+				//else
+					//feed = new FeedPrivate(eTitle, eLink, eDescription, ePubDate, userId, eToken);
 				Gson gson = new Gson();
 				List<String> list = (List<String>) feedEntity
 						.getProperty("torrents");
