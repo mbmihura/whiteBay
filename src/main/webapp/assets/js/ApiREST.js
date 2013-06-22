@@ -28,13 +28,13 @@ API = {
 			  error: params.error
 			});
 	},
-	shareFeed: function()
+	shareFeed: function(params)
 	{
 		$.ajax({
 			  url: '/social/' + params.feed,
 			  type: 'POST',
-			  success: callback.success,
-			  error: callback.error
+			  success: params.success,
+			  error: params.error
 			});	
 	}
 }
