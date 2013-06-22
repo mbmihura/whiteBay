@@ -317,6 +317,19 @@
 				}
 			});
 		}
+		function shareFeedInFb()
+		{
+			//Posible cient-side vaidations
+			var feed = $("#addTorrentFeedSelect").val();
+			var result = API.shareFeed({
+				feed: feed,
+				error: function() { notification("Feed couldn't be share on facebook!",alertStyle.error).flash(); },
+				success: function() { 
+					notification(fee + " was shared on our facebook!",alertStyle.success).flash();
+					showView("#userFeedsView");
+				}
+			});	
+		}
 		
 		// Create feed view:
 		function createFeed()

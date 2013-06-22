@@ -40,10 +40,18 @@ public class RssServlet extends HttpServlet {
          {
              String userId = urlParams[0];
              String feedId = urlParams[1];
+             String token = urlParams[2];
              try {
-				out.println(Feed.find(feedId, userId).toXML());
-		        response.setContentType("application/rss+xml"); 
-		        response.setStatus(HttpServletResponse.SC_OK);
+            	Feed feed = Feed.find(feedId, userId);
+            	if (feed.isTokenValid(token))
+            	{
+					out.println(feed.toXML());
+			        response.setContentType("application/rss+xml"); 
+			        response.setStatus(HttpServletResponse.SC_OK);
+            	} else
+            	{
+            		response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            	}
 			 } catch (FeedMalformedException e ) {
 				e.printStackTrace();
 				response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
