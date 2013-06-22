@@ -145,7 +145,7 @@ body {
 				<h1>Create a Feed!</h1>
 				<p class="lead">You have no feed yet. Create a feed to share it
 					with your friends.</p>
-				<!-- 			<a class="btn btn-large btn-success" href="#">Create Feed</a> -->
+				<a class="btn btn-large btn-success" onclick="showView('#addFeedView')" href="#">Create Feed</a>
 			</div>
 			<div id="feedsList" class="row-fluid">
 				<div class="span4 template" style="display: none">
@@ -269,10 +269,6 @@ body {
 							//Init Nav bar behavior
 							$("#mainNav").children().each(function() {
 								$(this).click(function() {
-									$("#mainNav").children().each(function() {
-										$(this).removeClass('active');
-									});
-									$(this).addClass('active');
 									showView($(this).attr('data-showview'));
 								});
 							});
@@ -305,6 +301,13 @@ body {
 		}
 
 		function showView(viewId) {
+			// Effects:
+			$("#mainNav").children().each(function() {
+				$(this).removeClass('active');
+			});
+			$('[data-showview="'+viewId+'"]').addClass('active');
+			
+			// Show selected view:
 			$("#userFeedsView").hide();
 			$("#addFeedView").hide();
 			$("#addTorrentView").hide();
@@ -325,18 +328,26 @@ body {
 					$("#feedsList > .aFeed").remove()
 					feedsList = JSON.parse(response);
 					//TODO: load feeds:
-					$.each(feedsList, function(i, item) {
-						var feed = $("#feedsList > .template").clone()
-								.appendTo("#feedsList").removeClass("template")
-								.addClass("aFeed").fadeIn();
-						feed.find("h2").text(item.title);
-						feed.find(".feedLink").text(item.link);
-						feed.find(".description").text(item.description);
-						for (var j = 0; j < item.torrents.length; ++j)
- 						{
- 							feed.find("ul").html(feed.find("ul").html() + '<li><a href="'+item.torrents[j].link+'">'+item.torrents[j].title+'</a></li>');
- 						}
-					});
+					if (feedsList.length > 0)
+					{
+						$("#noFeedMsg").hide();
+						$("#feedsList").show();
+						$.each(feedsList, function(i, item) {
+							var feed = $("#feedsList > .template").clone()
+									.appendTo("#feedsList").removeClass("template")
+									.addClass("aFeed").fadeIn();
+							feed.find("h2").text(item.title);
+							feed.find(".feedLink").text(item.link);
+							feed.find(".description").text(item.description);
+							for (var j = 0; j < item.torrents.length; ++j)
+	 						{
+	 							feed.find("ul").html(feed.find("ul").html() + '<li><a href="'+item.torrents[j].link+'">'+item.torrents[j].title+'</a></li>');
+	 						}
+						});
+					} else {
+						$("#feedsList").hide();
+						$("#noFeedMsg").show();
+					}
 					notification().hide();
 				}
 			});
