@@ -332,8 +332,10 @@ body {
 						feed.find("h2").text(item.title);
 						feed.find(".feedLink").text(item.link);
 						feed.find(".description").text(item.description);
-						//feed.find("ul").text(item.link);
-
+						for (var j = 0; j < item.torrents.length; ++j)
+ 						{
+ 							feed.find("ul").html(feed.find("ul").html() + '<li><a href="'+item.torrents[j].link+'">'+item.torrents[j].title+'</a></li>');
+ 						}
 					});
 					notification().hide();
 				}
