@@ -145,7 +145,7 @@ body {
 				<h1>Create a Feed!</h1>
 				<p class="lead">You have no feed yet. Create a feed to share it
 					with your friends.</p>
-				<!-- 			<a class="btn btn-large btn-success" href="#">Create Feed</a> -->
+				<a class="btn btn-large btn-success" onclick="showView('#addFeedView')" href="#">Create Feed</a>
 			</div>
 			<div id="feedsList" class="row-fluid">
 				<div class="span4 template" style="display: none">
@@ -192,7 +192,7 @@ body {
 			<div class="form-actions">
 				<button type="submit" onclick="createFeed();"
 					class="btn btn-primary">Create Feed</button>
-				<button type="button" class="btn" onclick="createFeedCancel();">Cancel</button>
+				<button type="button" class="btn" onclick="createFeedResetAndHideForm();">Cancel</button>
 			</div>
 		</form>
 		<!-- Add Torrent to Feed View -->
@@ -228,11 +228,7 @@ body {
 				<label class="control-label" for="addTorrentFeedSelect">Feed:
 				</label>
 				<div class="controls">
-					<select id="addTorrentFeedSelect">
-						<option>Private Feed</option>
-						<option>Feed 1</option>
-						<option>Feed 2</option>
-					</select>
+					<select id="addTorrentFeedSelect"></select>
 				</div>
 			</div>
 			<div class="control-group">
@@ -245,7 +241,7 @@ body {
 			<div class="form-actions">
 				<button type="submit" class="btn btn-primary"
 					onclick="addTorrent();">Save Torrent</button>
-				<button type="button" class="btn" onclick="addTorrentCancel();">Cancel</button>
+				<button type="button" class="btn" onclick="addTorrentResetAndHideForm();">Cancel</button>
 			</div>
 		</form>
 
@@ -263,38 +259,40 @@ body {
 	<script src="/assets/js/ApiREST.js"></script>
 	<script type="text/javascript">
 		// UI Javascript Functions:
-		$(document)
-				.ready(
-						function() {
-							//Init Nav bar behavior
-							$("#mainNav").children().each(function() {
-								$(this).click(function() {
-									$("#mainNav").children().each(function() {
-										$(this).removeClass('active');
-									});
-									$(this).addClass('active');
-									showView($(this).attr('data-showview'));
-								});
-							});
+		$(document).ready(function() {
+			//Init Nav bar behavior
+			$("#mainNav").children().each(function() {
+				$(this).click(function() {
+					showView($(this).attr('data-showview'));
+				});
+			});
 
-							updateFeedList();
-							// If user comes from a share torrent link
-							var f = function loadAppDisplayingAddTorrentView(
-									torrenturl) {
-								if (torrenturl != null) {
-									//todo: update nav buttons state. remove from $(document).ready()
-									var t = getTorrent(torrenturl);
-									$("#addTorrentTitle").val(t.title);
-									$("#addTorrentUrlInput").val(t.url);
-									if (t.description = !null)
-										$("#addTorrentDesc").val(t.description);
-									showView("addTorrentView");
-								}
-							};
-	<%//TODO excape char avoid XSS
-			String addTorrent = request.getParameter("addTorrent");
-			if (addTorrent != null)
-				out.println("f('" + addTorrent + "');");%>
+			updateFeedList();
+			// If user comes from a share torrent link
+			var f = function loadAppDisplayingAddTorrentView(title,url,description) {
+				if (title != null, url != null) {
+					$("#addTorrentTitleInput").val(title);
+					$("#addTorrentLinkInput").val(url);
+					if (description != null)
+						$("#addTorrentDescTxtarea").val(description);
+					if (true/*TODO: userLogged*/){
+					}else{
+						showView("#addTorrentView");
+					}
+				}
+			};
+		<%//TODO excape char avoid XSS
+			String title = request.getParameter("title");
+			String url = request.getParameter("url");
+			String description = request.getParameter("desc");
+			if (title != null & url != null)
+			{
+				title = "'"+title+"'";
+				url = "'"+url+"'";
+				description = (description == null)? "null":"'" + description + "'";
+				out.println("f(" + title + ","+url+","+description+");");
+			}
+				%>
 		});
 
 		function notification(msg, type) {
@@ -305,6 +303,13 @@ body {
 		}
 
 		function showView(viewId) {
+			// Effects:
+			$("#mainNav").children().each(function() {
+				$(this).removeClass('active');
+			});
+			$('[data-showview="'+viewId+'"]').addClass('active');
+			
+			// Show selected view:
 			$("#userFeedsView").hide();
 			$("#addFeedView").hide();
 			$("#addTorrentView").hide();
@@ -325,21 +330,46 @@ body {
 					$("#feedsList > .aFeed").remove()
 					feedsList = JSON.parse(response);
 					//TODO: load feeds:
-					$.each(feedsList, function(i, item) {
-						var feed = $("#feedsList > .template").clone()
-								.appendTo("#feedsList").removeClass("template")
-								.addClass("aFeed").fadeIn();
-						feed.find("h2").text(item.title);
-						feed.find(".feedLink").text(item.link);
-						feed.find(".description").text(item.description);
-						//feed.find("ul").text(item.link);
-
-					});
+					if (feedsList.length > 0)
+					{
+						$("#noFeedMsg").hide();
+						$("#feedsList").show();
+						$.each(feedsList, function(i, item) {
+							var feed = $("#feedsList > .template").clone()
+									.appendTo("#feedsList").removeClass("template")
+									.addClass("aFeed").fadeIn();
+							feed.find("h2").text(item.title);
+							feed.find(".feedLink").text(item.link);
+							feed.find(".description").text(item.description);
+							for (var j = 0; j < item.torrents.length; ++j)
+	 						{
+	 							feed.find("ul").html(feed.find("ul").html() + '<li><a href="'+item.torrents[j].link+'">'+item.torrents[j].title+'</a></li>');
+	 						}
+							$('#addTorrentFeedSelect').html($('#addTorrentFeedSelect').html() + "<option>"+item.title+"</option>");
+						});
+					} else {
+						$("#feedsList").hide();
+						$("#noFeedMsg").show();
+					}
 					notification().hide();
 				}
 			});
 		}
 
+		function shareFeedInFb()
+		{
+			//Posible cient-side vaidations
+			var feed = $("#addTorrentFeedSelect").val();
+			var result = API.shareFeed({
+				feed: feed,
+				error: function() { notification("Feed couldn't be share on facebook!",alertStyle.error).flash(); },
+				success: function() { 
+					notification(fee + " was shared on our facebook!",alertStyle.success).flash();
+					showView("#userFeedsView");
+				}
+			});	
+		}
+		
 		// Create feed view:
 		function createFeed() {
 			//Posible cient-side vaidations
@@ -355,12 +385,13 @@ body {
 				},
 				success : function() {
 					notification("Feed Created!", alertStyle.success).flash();
-					showView("#userFeedsView");
+					up
+					createFeedResetAndHideForm();
 				}
 			});
 		}
 
-		function createFeedCancel() {
+		function createFeedResetAndHideForm() {
 			$("#feedTitleInput").val("");
 			$("#feedLinkInput").val("");
 			$("#feedDescInput").val("");
@@ -376,7 +407,7 @@ body {
 				torrent : {
 					title : $("#addTorrentTitleInput").val(),
 					link : $("#addTorrentLinkInput").val(),
-					description : $("#addTorrentDesc").val(),
+					description : $("#addTorrentDescTxtarea").val(),
 					shareInFb : $("#addTorrentShareInFb").is(":checked")
 				},
 				error : function() {
@@ -384,14 +415,13 @@ body {
 							.flash();
 				},
 				success : function() {
-					notification("Torrent added to " + feed + "!",
-							alertStyle.success).flash();
-					showView("#userFeedsView");
+					notification("Torrent added to " + feed + "!",alertStyle.success).flash();
+					addTorrentResetAndHideForm();
 				}
 			});
 		}
 
-		function addTorrentCancel(feedId) {
+		function addTorrentResetAndHideForm() {
 			$("#addTorrentTitleInput").val("");
 			$("#addTorrentLinkInput").val("");
 			$("#addTorrentDescTxtarea").val("");
