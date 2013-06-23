@@ -228,11 +228,7 @@ body {
 				<label class="control-label" for="addTorrentFeedSelect">Feed:
 				</label>
 				<div class="controls">
-					<select id="addTorrentFeedSelect">
-						<option>Private Feed</option>
-						<option>Feed 1</option>
-						<option>Feed 2</option>
-					</select>
+					<select id="addTorrentFeedSelect"></select>
 				</div>
 			</div>
 			<div class="control-group">
@@ -349,6 +345,7 @@ body {
 	 						{
 	 							feed.find("ul").html(feed.find("ul").html() + '<li><a href="'+item.torrents[j].link+'">'+item.torrents[j].title+'</a></li>');
 	 						}
+							$('#addTorrentFeedSelect').html($('#addTorrentFeedSelect').html() + "<option>"+item.title+"</option>");
 						});
 					} else {
 						$("#feedsList").hide();
@@ -388,6 +385,7 @@ body {
 				},
 				success : function() {
 					notification("Feed Created!", alertStyle.success).flash();
+					up
 					createFeedResetAndHideForm();
 				}
 			});
