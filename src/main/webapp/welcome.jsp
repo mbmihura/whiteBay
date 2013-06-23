@@ -273,21 +273,30 @@ body {
 
 			updateFeedList();
 			// If user comes from a share torrent link
-			var f = function loadAppDisplayingAddTorrentView(torrenturl) {
-				if (torrenturl != null) {
-					//todo: update nav buttons state. remove from $(document).ready()
-					var t = getTorrent(torrenturl);
-					$("#addTorrentTitle").val(t.title);
-					$("#addTorrentUrlInput").val(t.url);
-					if (t.description = !null)
-						$("#addTorrentDesc").val(t.description);
-					showView("addTorrentView");
+			var f = function loadAppDisplayingAddTorrentView(title,url,description) {
+				if (title != null, url != null) {
+					$("#addTorrentTitleInput").val(title);
+					$("#addTorrentLinkInput").val(url);
+					if (description != null)
+						$("#addTorrentDescTxtarea").val(description);
+					if (true/*TODO: userLogged*/){
+					}else{
+						showView("#addTorrentView");
+					}
 				}
 			};
 		<%//TODO excape char avoid XSS
-			String addTorrent = request.getParameter("addTorrent");
-			if (addTorrent != null)
-				out.println("f('" + addTorrent + "');");%>
+			String title = request.getParameter("title");
+			String url = request.getParameter("url");
+			String description = request.getParameter("desc");
+			if (title != null & url != null)
+			{
+				title = "'"+title+"'";
+				url = "'"+url+"'";
+				description = (description == null)? "null":"'" + description + "'";
+				out.println("f(" + title + ","+url+","+description+");");
+			}
+				%>
 		});
 
 		function notification(msg, type) {
@@ -400,7 +409,7 @@ body {
 				torrent : {
 					title : $("#addTorrentTitleInput").val(),
 					link : $("#addTorrentLinkInput").val(),
-					description : $("#addTorrentDesc").val(),
+					description : $("#addTorrentDescTxtarea").val(),
 					shareInFb : $("#addTorrentShareInFb").is(":checked")
 				},
 				error : function() {
