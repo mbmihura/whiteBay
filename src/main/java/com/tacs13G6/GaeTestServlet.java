@@ -167,7 +167,6 @@ public class GaeTestServlet extends HttpServlet {
 					resp.getWriter().println(e.getProperty("user"));
 				}
 			} catch (TorrentMalformedException e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 				resp.getWriter().println("TorrentMalFormedException when creating test torrent. Ex:" + e1.getMessage());
 			}

@@ -48,7 +48,6 @@ public class FeedServlet extends HttpServlet {
      */
     public FeedServlet() {
         super();
-        // TODO Auto-generated constructor stub
     }
 
     /**
@@ -146,37 +145,30 @@ public class FeedServlet extends HttpServlet {
                 boolean shareInFb = request.getParameter("shareInFb").toLowerCase() == "true";
                 
 	            try {
-	   				Feed a = Feed.find(feedId,userId);
-	   				boolean titleAlreadyExists = false;
-	   				//TODO: refactor ex.
-	   				for (Torrent t : a.getTorrents())
+	   				Feed feed = Feed.find(feedId,userId);
+	   				for (Torrent t : feed.getTorrents())
 	   				{
-	   					titleAlreadyExists = titleAlreadyExists || t.getTitle().equals(title);
+	   					if(t.getTitle().equals(title))
+	   						throw new TorrentTitleAlreadyExistsInFeedException("Feed already contains a torrent with title "+ title);
 	   				}
-	   				if (titleAlreadyExists)
-	   				{
-	   					throw new TorrentTitleAlreadyExistsInFeedException("Feed already contains a torrent with title "+ title);
-	   				} else {
-	   					a.getTorrents().add(new Torrent(title, description, link));
-	   					a.save();
-	   					response.setStatus(HttpServletResponse.SC_OK);
-	                }
-	   				if (shareInFb){
+   					feed.getTorrents().add(new Torrent(title, description, link));
+   					feed.save();
+   					if (shareInFb){
 	   					//TODO: share in facebook;
 	   				}
+   					response.setStatus(HttpServletResponse.SC_OK);
 	   			} catch (FeedMalformedException | TorrentMalformedException e) {
 	   				e.printStackTrace();
-	   				//TODO: refactor
-	   				response.getWriter().println(e.getMessage());
-	   				response.getWriter().println(feedId);
-	   				response.getWriter().println(link);
-	   				response.getWriter().println(description);
-	   				response.getWriter().println(userId);
+	   				out.println(e.getMessage());
+	   				out.println(feedId);
+	   				out.println(link);
+	   				out.println(description);
+	   				out.println(userId);
 	   				response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 	   			} catch (EntityNotFoundException e) {
 	   				response.setStatus(HttpServletResponse.SC_NOT_FOUND);
 	   			} catch (TorrentTitleAlreadyExistsInFeedException e) {
-	   				response.getWriter().println(e.getMessage());
+	   				out.println(e.getMessage());
 	   				response.setStatus(HttpServletResponse.SC_PRECONDITION_FAILED);
 	   			}
             } else {

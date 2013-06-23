@@ -192,7 +192,7 @@ body {
 			<div class="form-actions">
 				<button type="submit" onclick="createFeed();"
 					class="btn btn-primary">Create Feed</button>
-				<button type="button" class="btn" onclick="createFeedCancel();">Cancel</button>
+				<button type="button" class="btn" onclick="createFeedResetAndHideForm();">Cancel</button>
 			</div>
 		</form>
 		<!-- Add Torrent to Feed View -->
@@ -245,7 +245,7 @@ body {
 			<div class="form-actions">
 				<button type="submit" class="btn btn-primary"
 					onclick="addTorrent();">Save Torrent</button>
-				<button type="button" class="btn" onclick="addTorrentCancel();">Cancel</button>
+				<button type="button" class="btn" onclick="addTorrentResetAndHideForm();">Cancel</button>
 			</div>
 		</form>
 
@@ -263,31 +263,28 @@ body {
 	<script src="/assets/js/ApiREST.js"></script>
 	<script type="text/javascript">
 		// UI Javascript Functions:
-		$(document)
-				.ready(
-						function() {
-							//Init Nav bar behavior
-							$("#mainNav").children().each(function() {
-								$(this).click(function() {
-									showView($(this).attr('data-showview'));
-								});
-							});
+		$(document).ready(function() {
+			//Init Nav bar behavior
+			$("#mainNav").children().each(function() {
+				$(this).click(function() {
+					showView($(this).attr('data-showview'));
+				});
+			});
 
-							updateFeedList();
-							// If user comes from a share torrent link
-							var f = function loadAppDisplayingAddTorrentView(
-									torrenturl) {
-								if (torrenturl != null) {
-									//todo: update nav buttons state. remove from $(document).ready()
-									var t = getTorrent(torrenturl);
-									$("#addTorrentTitle").val(t.title);
-									$("#addTorrentUrlInput").val(t.url);
-									if (t.description = !null)
-										$("#addTorrentDesc").val(t.description);
-									showView("addTorrentView");
-								}
-							};
-	<%//TODO excape char avoid XSS
+			updateFeedList();
+			// If user comes from a share torrent link
+			var f = function loadAppDisplayingAddTorrentView(torrenturl) {
+				if (torrenturl != null) {
+					//todo: update nav buttons state. remove from $(document).ready()
+					var t = getTorrent(torrenturl);
+					$("#addTorrentTitle").val(t.title);
+					$("#addTorrentUrlInput").val(t.url);
+					if (t.description = !null)
+						$("#addTorrentDesc").val(t.description);
+					showView("addTorrentView");
+				}
+			};
+		<%//TODO excape char avoid XSS
 			String addTorrent = request.getParameter("addTorrent");
 			if (addTorrent != null)
 				out.println("f('" + addTorrent + "');");%>
@@ -382,12 +379,12 @@ body {
 				},
 				success : function() {
 					notification("Feed Created!", alertStyle.success).flash();
-					showView("#userFeedsView");
+					createFeedResetAndHideForm();
 				}
 			});
 		}
 
-		function createFeedCancel() {
+		function createFeedResetAndHideForm() {
 			$("#feedTitleInput").val("");
 			$("#feedLinkInput").val("");
 			$("#feedDescInput").val("");
@@ -411,14 +408,13 @@ body {
 							.flash();
 				},
 				success : function() {
-					notification("Torrent added to " + feed + "!",
-							alertStyle.success).flash();
-					showView("#userFeedsView");
+					notification("Torrent added to " + feed + "!",alertStyle.success).flash();
+					addTorrentResetAndHideForm();
 				}
 			});
 		}
 
-		function addTorrentCancel(feedId) {
+		function addTorrentResetAndHideForm() {
 			$("#addTorrentTitleInput").val("");
 			$("#addTorrentLinkInput").val("");
 			$("#addTorrentDescTxtarea").val("");
