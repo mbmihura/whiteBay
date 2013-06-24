@@ -1,3 +1,14 @@
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="UTF-8"%>
+<%@page import="com.tacs13G6.fbApp.FB_CONSTANTS"%>
+<%@ page import= "com.tacs13G6.fbApp.ApplicationConfig" %>
+<%@ page import= "com.tacs13G6.services.FacebookApi" %>
+
+<%
+  if(session.getAttribute(FB_CONSTANTS.ACCESS_TOKEN) == null){
+    session.setAttribute(FB_CONSTANTS.ACCESS_TOKEN,FacebookApi.getAppAccessToken());
+   }
+%>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -96,6 +107,7 @@
 </head>
 
 <body>
+  	<div id="fb-root"></div>
 	<div class="container">
 		<div class="masthead">
 			<h3 class="muted">White Bay Social Torrents	Feeds</h3>
@@ -108,7 +120,8 @@
 	              <span class="icon-bar"></span>
 	              <span class="icon-bar"></span>
 	            </button>
-	            <a class="brand" style="border-right: 1px solid rgba(0, 0, 0, .1);" href="#">username</a>
+	            <a class="brand login" style="border-right: 1px solid rgba(0, 0, 0, .1);" href="#">SignIn</a>
+	            <a class="brand register" style="border-right: 1px solid rgba(0, 0, 0, .1);" href="#">Register</a>
 	            <!-- Responsive Navbar Part 2: Place all navbar contents you want collapsed withing .navbar-collapse.collapse. -->
 	            <div class="nav-collapse collapse">
 	              <ul id="mainNav" class="nav">
@@ -116,12 +129,13 @@
 	                <li data-showview="#addFeedView"><a href="#">Create feed</a></li>
 	                <li data-showview="#addTorrentView"><a href="#">Add torrent</a></li>
 	              </ul>
+	              
 	              <ul class="nav" style="float: right;margin: 0;border-left: 0px;">
 	                <!-- Read about Bootstrap dropdowns at http://twitter.github.com/bootstrap/javascript.html#dropdowns -->
 	                <li class="dropdown">
 	                  <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-cog"></i><b class="caret"></b></a>
 	                  <ul class="dropdown-menu">
-	                    <li><a href="#">SignOut</a></li>
+	                    <li><a href="#" class="logout">SignOut</a></li>
 	                  </ul>
 	                </li>
 	              </ul>
@@ -259,18 +273,42 @@
 	<!-- javascript -->
 	<script src="/assets/js/jquery-2.0.2.min.js"></script>
 	<script src="/assets/js/bootstrap.js"></script>
+	<script src="/assets/js/ui.js"></script>
+  	<script src="/assets/js/ui.vars.js"></script>
+ 	<script src="/assets/js/ui.facebook.js"></script>
+  	<script src="/assets/js/ui.user.js"></script>
+  	<script src="/assets/js/ui.panel.js"></script>
+  	<script type="text/javascript">
+	        
+	        
+	  </script>
 	<script type="text/javascript">
+	 (function(d){
+	     var js, id = 'facebook-jssdk', ref = d.getElementsByTagName('script')[0];
+	     if (d.getElementById(id)) {return;}
+	     js = d.createElement('script'); js.id = id; js.async = true;
+	     js.src = "//connect.facebook.net/en_US/all.js";
+	     ref.parentNode.insertBefore(js, ref);
+	   }(document));
+	 
 		$(document).ready(function() {
-			$("#mainNav").children().each(function() {
-				$(this).click(function() {
-					$("#mainNav").children().each(function() {
-						$(this).removeClass('active');
-					});
-					$(this).addClass('active');
-					showView($(this).attr('data-showview'));
-				});
-			});
+			$ui.vars.init();
+	        $ui.vars.set('appId','<%= ApplicationConfig.client_id%>');
+	        $ui.vars.set('url','<%= ApplicationConfig.url%>');
+	        <%
+	        if(session.getAttribute(FB_CONSTANTS.USER) != null){
+	        %>
+	            $ui.facebook.init(function(){
+	              $ui.user.setSession(<%=session.getAttribute(FB_CONSTANTS.USER)%>);  
+	            });
+	        <%}
+	        else{
+	        %>
+	            $ui.facebook.init(function(){});
+	        <%}%>
+	        $ui.panel.init();
 		});
+		
 		function showView(viewId) {
 			$("#userFeedsView").hide();
 			$("#addFeedView").hide();
