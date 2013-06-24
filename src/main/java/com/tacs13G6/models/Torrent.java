@@ -20,10 +20,10 @@ public class Torrent {
      * 
      * @exception TorrentMalformedException Si tanto el titulo como la descripcion del torrent nulos o vacios.
      */
-    public Torrent(String title, String description, String link)
+    public Torrent(String title, String description, String link) throws TorrentMalformedException
     {
-    	//if (title == null || title.isEmpty())
-    	//	throw new TorrentMalformedException("title requiered");
+    	if (title == null || title.isEmpty())
+    		throw new TorrentMalformedException("title requiered");
     	//Pattern p = Pattern.compile("^[A-Za-z0-9_]+$");
     	//if (p.matcher(title).find() || p.matcher("").find() || p.matcher("").find())
     	//	throw new TorrentMalformedException("Torrent data can not contain especial characters");
