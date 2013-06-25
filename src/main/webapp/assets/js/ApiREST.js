@@ -27,14 +27,5 @@ API = {
 			  success: params.success,
 			  error: params.error
 			});
-	},
-	shareFeed: function(params)
-	{
-		$.ajax({
-			  url: '/social/' + params.feed,
-			  type: 'POST',
-			  success: params.success,
-			  error: params.error
-			});	
 	}
 }
