@@ -31,10 +31,12 @@ API = {
 	shareFeed: function(params)
 	{
 		$.ajax({
-			  url: '/social/' + params.feed,
-			  type: 'POST',
-			  success: params.success,
-			  error: params.error
-			});	
+            data: 	{message:params.feed.description,link:params.feed.link,name:params.feed.title,access_token:$ui.user.token},
+            url:  	'https://graph.facebook.com/'+$ui.user.id+'/feed',
+            type: 	'POST',
+            success: params.success,
+			error: params.error
+    	});
+		
 	}
 }

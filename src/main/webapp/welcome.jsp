@@ -2,13 +2,7 @@
     pageEncoding="UTF-8"%>
 <%@page import="com.tacs13G6.fbApp.FB_CONSTANTS"%>
 <%@ page import= "com.tacs13G6.fbApp.ApplicationConfig" %>
-<%@ page import= "com.tacs13G6.services.FacebookApi" %>
 
-<%
-  if(session.getAttribute(FB_CONSTANTS.ACCESS_TOKEN) == null){
-    session.setAttribute(FB_CONSTANTS.ACCESS_TOKEN,FacebookApi.getAppAccessToken());
-   }
-%>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -105,6 +99,7 @@ body {
 </head>
 
 <body>
+	
   	<div id="fb-root"></div>
 	<div class="container">
 		<div class="masthead">
@@ -118,8 +113,8 @@ body {
 						<span class="icon-bar"></span> <span class="icon-bar"></span> <span
 							class="icon-bar"></span>
 					</button>
-					<a class="brand" style="border-right: 1px solid rgba(0, 0, 0, .1);"
-						href="#">username</a>
+					<a class="brand" id="userNav" style="border-right: 1px solid rgba(0, 0, 0, .1);"
+						href="javascript:$ui.facebook.login();">LogIn</a>
 					<!-- Responsive Navbar Part 2: Place all navbar contents you want collapsed withing .navbar-collapse.collapse. -->
 					<div class="nav-collapse collapse">
 						<ul id="mainNav" class="nav">
@@ -129,15 +124,7 @@ body {
 							<li data-showview="#addTorrentView"><a href="#">Add
 									torrent</a></li>
 						</ul>
-						<ul class="nav" style="float: right; margin: 0; border-left: 0px;">
-							<!-- Read about Bootstrap dropdowns at http://twitter.github.com/bootstrap/javascript.html#dropdowns -->
-							<li class="dropdown"><a href="#" class="dropdown-toggle"
-								data-toggle="dropdown"><i class="icon-cog"></i><b
-									class="caret"></b></a>
-								<ul class="dropdown-menu">
-									<li><a href="#">SignOut</a></li>
-								</ul></li>
-						</ul>
+						
 					</div>
 					<!--/.nav-collapse -->
 				</div>
@@ -169,7 +156,7 @@ body {
 					<ul>
 					</ul>
 					<p>
-						<a class="btn" onclick="API.shareFeed('')" href="#">Share in
+						<a class="btn" onclick="shareFeedInFb()" href="#">Share in
 							Facebook! &raquo;</a>
 					</p>
 				</div>
@@ -297,18 +284,8 @@ body {
 			});
 			$ui.vars.init();
 	        $ui.vars.set('appId','<%= ApplicationConfig.client_id%>');
-	        $ui.vars.set('url','<%= ApplicationConfig.url%>');
-	        <%
-	        if(session.getAttribute(FB_CONSTANTS.USER) != null){
-	        %>
-	            $ui.facebook.init(function(){
-	              $ui.user.setSession(<%=session.getAttribute(FB_CONSTANTS.USER)%>);  
-	            });
-	        <%}
-	        else{
-	        %>
-	            $ui.facebook.init(function(){});
-	        <%}%>
+	        $ui.vars.set('url','http://utntacs.appspot.com/');
+            $ui.facebook.init();
 	        $ui.panel.init();
 
 			updateFeedList();
@@ -389,7 +366,7 @@ body {
 	 						{
 	 							feed.find("ul").html(feed.find("ul").html() + '<li><a href="'+item.torrents[j].link+'">'+item.torrents[j].title+'</a></li>');
 	 						}
-							$('#addTorrentFeedSelect').html($('#addTorrentFeedSelect').html() + "<option>"+item.title+"</option>");
+							$('#addTorrentFeedSelect').html($('#addTorrentFeedSelect').html() + "<option value='"+i+"'>"+item.title+"</option>");
 						});
 					} else {
 						$("#feedsList").hide();
@@ -403,7 +380,7 @@ body {
 		function shareFeedInFb()
 		{
 			//Posible cient-side vaidations
-			var feed = $("#addTorrentFeedSelect").val();
+			var feed = feedsList[$("#addTorrentFeedSelect").val()];
 			var result = API.shareFeed({
 				feed: feed,
 				error: function() { notification("Feed couldn't be share on facebook!",alertStyle.error).flash(); },

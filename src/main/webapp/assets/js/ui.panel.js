@@ -10,29 +10,17 @@ $ui.panel.init = function(){
 			showView($(this).attr('data-showview'));
 		});
 	});
-	
-	$('.navbar-inner .dropdown').hide();
+
 	$('#userFeedsView').hide();
-	$('.navbar-inner .login').click(function(){
-		$ui.facebook.login();
-	});
-	$('.navbar-inner .logout').click(function(){
-		$ui.facebook.logout();
-	});
-	$('.navbar-inner .register').click(function(){
-		$ui.facebook.register();
-	});
+	$("#mainNav").hide();
+	
 }
 
 $ui.panel.refresh = function(){
-	if($ui.user.isRegister()){
-		$('.navbar-inner .login').hide();
-		$('.navbar-inner .register').hide();
-		$('.navbar-inner .dropdown').show();
-		$('#userFeedsView').show();
-	}else{
-		$('.navbar-inner .login').hide();
-		$('.navbar-inner .dropdown').show();
-		$('.navbar-inner .register').show();
-	}
+	$('#userFeedsView').show();
+	$("#mainNav").show();
+	$("#userNav").html($ui.user.name);
+	$("#userNav").attr("href",$ui.user.link);
+	$("#userNav").attr("target","_blank");
+	
 }

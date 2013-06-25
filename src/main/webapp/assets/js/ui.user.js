@@ -1,26 +1,11 @@
 $ui.user = {}
 
-$ui.user.set = function(object){
-	$ui.user.id = object.userID;
-	$ui.user.token = object.accessToken;
-	$ui.user.name = object.userName;
-    $ui.user.register = object.register || false ;
+$ui.user.set = function(object,authResponse){
+	$ui.user.id = object.id;
+	$ui.user.token = authResponse.accessToken;
+	$ui.user.name = object.name;
+    $ui.user.link = object.link;
 	$ui.panel.refresh();
-}
-
-$ui.user.get = function(authResponse){
-	$.ajax({
-            data: 	{},
-           	url:  	'/FacebookApp/GetUser/'+authResponse.userID,
-            type: 	'get',
-            success:  function (response) {
-                $ui.user.set(response);
-            },
-            error:  function (response) {
-                $ui.facebook.getUser();
-            }
-    });
-	
 }
 
 $ui.user.setSession = function(object){
@@ -35,21 +20,5 @@ $ui.user.setSession = function(object){
                 $ui.user.logout();
             }
         );
-}
-
-$ui.user.logout = function(){
-    $.ajax({
-            data:   {},
-            url:    '/Logout',
-            type:   'get',
-            success:  function (response) {
-                window.location.reload();
-            }
-        });
-}
-
-
-$ui.user.isRegister = function(){
-	return $ui.user.register;
 }
 
