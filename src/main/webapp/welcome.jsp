@@ -378,7 +378,8 @@ body {
 		}
 
 		function shareFeedInFb()
-		{
+		{	
+			//TODO: adaptar a publicacion en fb usando js.
 			//Posible cient-side vaidations
 			var feed = feedsList[$("#addTorrentFeedSelect").val()];
 			var result = API.shareFeed({
