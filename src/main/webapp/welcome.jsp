@@ -357,17 +357,22 @@ body {
 		}
 
 		function shareFeedInFb()
-		{
+		{	
+			//TODO: adaptar a publicacion en fb usando js.
 			//Posible cient-side vaidations
-			var feed = $("#addTorrentFeedSelect").val();
-			var result = API.shareFeed({
-				feed: feed,
-				error: function() { notification("Feed couldn't be share on facebook!",alertStyle.error).flash(); },
-				success: function() { 
-					notification(fee + " was shared on our facebook!",alertStyle.success).flash();
-					showView("#userFeedsView");
-				}
-			});	
+// 			var feed = $("#addTorrentFeedSelect").val();
+// 			var result = API.shareFeed({
+// 				feed: feed,
+// 				error: function() { notification("Feed couldn't be share on facebook!",alertStyle.error).flash(); },
+// 				success: function() { 
+// 					notification(fee + " was shared on our facebook!",alertStyle.success).flash();
+// 					showView("#userFeedsView");
+// 				}
+// 			});
+			
+			var exampleUrlToshare = 'localhost:8080/rss/mbmihura/a';
+			//TODO Pablo: aca va la llamada al metodo que comparte en facebook un link. Por ejemplo el de la variable exampleUrlToshare.
+				
 		}
 		
 		// Create feed view:
