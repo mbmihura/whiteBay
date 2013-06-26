@@ -3,10 +3,8 @@ package com.tacs13G6.models;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Random;
 import java.util.regex.Pattern;
 
-import java.io.Console;
 // XML lib:
 import java.io.StringWriter;
 import javax.xml.stream.XMLEventFactory;

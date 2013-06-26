@@ -1,8 +1,5 @@
 package com.tacs13G6.models;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import com.google.gson.Gson;
 import com.tacs13G6.models.exceptions.TorrentMalformedException;
 

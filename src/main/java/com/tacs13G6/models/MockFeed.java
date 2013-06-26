@@ -1,7 +1,5 @@
 package com.tacs13G6.models;
 
-import java.util.Date;
-
 import com.tacs13G6.models.Feed;
 import com.tacs13G6.models.exceptions.FeedMalformedException;
 import com.tacs13G6.models.exceptions.TorrentMalformedException;

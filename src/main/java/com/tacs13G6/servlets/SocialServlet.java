@@ -2,9 +2,6 @@ package com.tacs13G6.servlets;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -14,7 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.gson.Gson;
 import com.tacs13G6.models.Feed;
-import com.tacs13G6.models.MockFeed;
+
 import com.tacs13G6.models.exceptions.FeedMalformedException;
 
 	/**
