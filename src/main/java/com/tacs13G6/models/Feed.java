@@ -3,10 +3,9 @@ package com.tacs13G6.models;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Random;
 import java.util.regex.Pattern;
 
-import java.io.Console;
+
 // XML lib:
 import java.io.StringWriter;
 import javax.xml.stream.XMLEventFactory;
@@ -99,8 +98,7 @@ public class Feed {
 		try {
 			Feed feed = new Feed(title, eLink, eDescription, ePubDate, userId, eToken);
 			Gson gson = new Gson();
-			List<String> list = (List<String>) feedEntity
-					.getProperty("torrents");
+			List<String> list = (List<String>) feedEntity.getProperty("torrents");
 			// Necesario, ya que aunque se carga durante el metodo save(), si
 			// esta vacio datastore almacena nulo en ves de una lista vacia.
 			if (list != null) {
@@ -291,4 +289,5 @@ public class Feed {
 	public String getToken() {
 		return this.token;
 	}
+
 }

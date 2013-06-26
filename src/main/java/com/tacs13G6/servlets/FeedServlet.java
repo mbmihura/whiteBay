@@ -151,10 +151,12 @@ public class FeedServlet extends HttpServlet {
 	   					if(t.getTitle().equals(title))
 	   						throw new TorrentTitleAlreadyExistsInFeedException("Feed already contains a torrent with title "+ title);
 	   				}
-   					feed.getTorrents().add(new Torrent(title, description, link));
+	   				Torrent newTorrent = new Torrent(title, description, link);
+   					feed.getTorrents().add(newTorrent);
    					feed.save();
    					if (shareInFb){
-	   					//TODO: share in facebook;
+	   					// url: SocialServlet.getAddingUrlFor(newTorrent);
+   						//TODO: share in facebook;
 	   				}
    					response.setStatus(HttpServletResponse.SC_OK);
 	   			} catch (FeedMalformedException | TorrentMalformedException e) {
