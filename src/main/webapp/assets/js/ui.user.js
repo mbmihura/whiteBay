@@ -5,6 +5,13 @@ $ui.user.set = function(object,authResponse){
 	$ui.user.token = authResponse.accessToken;
 	$ui.user.name = object.name;
     $ui.user.link = object.link;
+    API.logIn({
+    	userId : $ui.user.id,
+		error : function() {
+			notification("Could not load your facebook user.", alertStyle.error).flash();
+		}
+	});
+    
 	$ui.panel.refresh();
 }
 

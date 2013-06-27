@@ -1,4 +1,14 @@
 API = {
+	logIn: function(params)
+	{
+		$.ajax({
+		  url: '/auth',
+		  type: 'POST',
+		  data: {userId: params.userId},
+		  success: params.success,
+		  error: params.error
+		});
+	},
 	getFeeds: function(params)
 	{
 		$.ajax({

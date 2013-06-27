@@ -366,7 +366,7 @@ body {
 	 						{
 	 							feed.find("ul").html(feed.find("ul").html() + '<li><a href="'+item.torrents[j].link+'">'+item.torrents[j].title+'</a></li>');
 	 						}
-							$('#addTorrentFeedSelect').html($('#addTorrentFeedSelect').html() + "<option value='"+i+"'>"+item.title+"</option>");
+							$('#addTorrentFeedSelect').html($('#addTorrentFeedSelect').html() + "<option value='"+item.title+"'>"+item.title+"</option>");
 						});
 					} else {
 						$("#feedsList").hide();
