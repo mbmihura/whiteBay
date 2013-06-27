@@ -1,5 +1,8 @@
 package com.tacs13G6.servlets;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.io.IOException;
 import java.io.PrintWriter;
 
@@ -11,6 +14,9 @@ import javax.servlet.http.HttpServletResponse;
 import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.gson.Gson;
 import com.tacs13G6.models.Feed;
+
+import com.tacs13G6.models.MockFeed;
+import com.tacs13G6.models.Torrent;
 
 import com.tacs13G6.models.exceptions.FeedMalformedException;
 
@@ -43,6 +49,7 @@ public class SocialServlet extends HttpServlet {
 	             if (feedId != null && !feedId.isEmpty()) {
 	 	            try {
 	 	            	Feed feed = Feed.find(feedId, userId);
+	 	            	// Url: RssServlet.getRssUrlFor(feed);
 	 					//TODO: share feed!
 	 					response.setStatus(HttpServletResponse.SC_OK);
 	 				} catch (FeedMalformedException e) {
@@ -58,4 +65,18 @@ public class SocialServlet extends HttpServlet {
 	       //}
 	 	    out.close();  
 	     } 
+	     public static String getAddingUrlFor(Torrent torrent)
+	     {
+			final String encodeType = "UTF-8";
+	    	 try {
+				return new StringBuilder()
+				 .append("/?title=").append(URLEncoder.encode(torrent.getTitle(), encodeType))
+				 .append("&link=").append(URLEncoder.encode(torrent.getLink(), encodeType))
+				 .append("&desc=").append(URLEncoder.encode(torrent.getDescription(), encodeType))
+				 .toString();
+			} catch (UnsupportedEncodingException e) {
+				e.printStackTrace();
+				return null;
+			}
+	     }
 	    }

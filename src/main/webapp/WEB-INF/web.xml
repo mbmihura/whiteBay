@@ -13,12 +13,12 @@
         <url-pattern>/rss/*</url-pattern>
     </servlet-mapping>
     <servlet>
-        <servlet-name>Social</servlet-name>
-        <servlet-class>com.tacs13G6.servlets.SocialServlet</servlet-class>
+        <servlet-name>Auth</servlet-name>
+        <servlet-class>com.tacs13G6.servlets.AuthServlet</servlet-class>
     </servlet>
     <servlet-mapping>
-        <servlet-name>Social</servlet-name>
-        <url-pattern>/social/*</url-pattern>
+        <servlet-name>Auth</servlet-name>
+        <url-pattern>/auth/*</url-pattern>
     </servlet-mapping>
     <servlet>
         <servlet-name>Feeds</servlet-name>

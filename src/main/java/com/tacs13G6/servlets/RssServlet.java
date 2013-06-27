@@ -65,4 +65,12 @@ public class RssServlet extends HttpServlet {
          }
  	    out.close();
     }
+     public static String getRssUrlFor(Feed feed)
+     {
+    	 StringBuilder sb = new StringBuilder();
+    	 sb.append('/').append(feed.getUser()).append('/').append(feed.getTitle());
+    	 if (feed.getToken() != null)
+    		 sb.append('/').append(feed.getToken());
+    	 return sb.toString();
+     }
 }

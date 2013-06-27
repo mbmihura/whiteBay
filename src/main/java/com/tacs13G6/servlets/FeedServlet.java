@@ -20,6 +20,7 @@ import com.tacs13G6.models.Torrent;
 import com.tacs13G6.models.exceptions.FeedMalformedException;
 import com.tacs13G6.models.exceptions.TorrentMalformedException;
 import com.tacs13G6.models.exceptions.TorrentTitleAlreadyExistsInFeedException;
+import com.tacs13G6.servlets.exceptions.NotLoggedUserException;
 
 /**
  * Servlet implementation class FeedServlet
@@ -39,16 +40,12 @@ public class FeedServlet extends HttpServlet {
      */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         PrintWriter out = response.getWriter(); 
-        //TODO: get current user;
-        String userId = "mbmihura";
         String feedId = UrlParserService.parse(request.getPathInfo(), 1)[0];
-        
-      //TODO:  If (usuario es anonimo/no inicio sesion) {
-      //    TODO: return url to do auth.
-      //    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-      //} else {
-    		Gson jsonFactory = new Gson();
-            if (feedId != null && !feedId.isEmpty()) {
+
+        try {
+        	String userId = AuthServlet.getCurrentUserId(request);
+			Gson jsonFactory = new Gson();
+	        if (feedId != null && !feedId.isEmpty()) {
 	            try {
 	            	Feed feed = Feed.find(feedId, userId);
 					out.println(jsonFactory.toJson(feed));
@@ -59,13 +56,15 @@ public class FeedServlet extends HttpServlet {
 					response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 				} catch (EntityNotFoundException e) {
 					response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-				}
-            } else {
-            	List<Feed> usersFeeds = Feed.find(userId);                 
-                out.println(jsonFactory.toJson(usersFeeds));
-                response.setStatus(HttpServletResponse.SC_OK);
-            }
-      //}
+				} 
+	        } else {
+	        	List<Feed> usersFeeds = Feed.find(userId);                 
+	            out.println(jsonFactory.toJson(usersFeeds));
+	            response.setStatus(HttpServletResponse.SC_OK);
+	        }
+        } catch (NotLoggedUserException e) {
+			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+		}
 	    out.close();  
     }
 
@@ -74,36 +73,33 @@ public class FeedServlet extends HttpServlet {
      */
     protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     	PrintWriter out = response.getWriter(); 
-        //TODO: get current user;
-        String userId = "mbmihura";
         String feedId = UrlParserService.parse(request.getPathInfo(), 1)[0];
         
-      //TODO:  If (usuario es anonimo/no inicio sesion) {
-      //    TODO: return url to do auth.
-	  //    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-	  //} else {
-      	    Gson jsonFactory = new Gson();
-            if (feedId != null && !feedId.isEmpty()) {
-	            String link = request.getParameter("link");
-	            String description = request.getParameter("description");
-	            try {
-	   				Feed a = Feed.createFeed(feedId, link, description, userId);
-	   				a.save();
-	   				response.setStatus(HttpServletResponse.SC_CREATED);
-	   			} catch (FeedMalformedException e) {
-	   				e.printStackTrace();
-	   				response.getWriter().println(e.getMessage());
-	   				response.getWriter().println("recieved params:");
-	   				response.getWriter().println(feedId);
-	   				response.getWriter().println(link);
-	   				response.getWriter().println(description);
-	   				response.getWriter().println(userId);
-	   				response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-	   			}
-            } else {
-                response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-            }
-      //}
+  	    Gson jsonFactory = new Gson();
+        if (feedId != null && !feedId.isEmpty()) {
+        	String link = request.getParameter("link");
+            String description = request.getParameter("description");
+            String userId = null;
+        	try {
+	        	userId = AuthServlet.getCurrentUserId(request);
+   				Feed a = Feed.createFeed(feedId, link, description, userId);
+   				a.save();
+   				response.setStatus(HttpServletResponse.SC_CREATED);
+   			} catch (FeedMalformedException e) {
+   				e.printStackTrace();
+   				response.getWriter().println(e.getMessage());
+   				response.getWriter().println("recieved params:");
+   				response.getWriter().println(feedId);
+   				response.getWriter().println(link);
+   				response.getWriter().println(description);
+   				response.getWriter().println(userId);
+   				response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+   			} catch (NotLoggedUserException e) {
+   				response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+			}
+        } else {
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+        }
         out.close();
     }
 
@@ -112,53 +108,52 @@ public class FeedServlet extends HttpServlet {
      * @see HttpServlet#doPost(HttpServletRequest, HttpServletResponse)
      */
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    	PrintWriter out = response.getWriter(); 
-        //TODO: get current user;
-        String userId = "mbmihura";
+    	PrintWriter out = response.getWriter();     
         String feedId = UrlParserService.parse(request.getPathInfo(), 1)[0];
         
-      //TODO:  If (usuario es anonimo/no inicio sesion) {
-      //    TODO: return url to do auth.
-	  //    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-	  //} else {
-      	    Gson jsonFactory = new Gson();
-            if (feedId != null && !feedId.isEmpty()) {
-            	String title = request.getParameter("title");
-                String link = request.getParameter("link");
-                String description = request.getParameter("description");
-                boolean shareInFb = request.getParameter("shareInFb").toLowerCase() == "true";
-                
-	            try {
-	   				Feed feed = Feed.find(feedId,userId);
-	   				for (Torrent t : feed.getTorrents())
-	   				{
-	   					if(t.getTitle().equals(title))
-	   						throw new TorrentTitleAlreadyExistsInFeedException("Feed already contains a torrent with title "+ title);
-	   				}
-   					feed.getTorrents().add(new Torrent(title, description, link));
-   					feed.save();
-   					if (shareInFb){
-	   					//TODO: share in facebook;
-	   				}
-   					response.setStatus(HttpServletResponse.SC_OK);
-	   			} catch (FeedMalformedException | TorrentMalformedException e) {
-	   				e.printStackTrace();
-	   				out.println(e.getMessage());
-	   				out.println(feedId);
-	   				out.println(link);
-	   				out.println(description);
-	   				out.println(userId);
-	   				response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-	   			} catch (EntityNotFoundException e) {
-	   				response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-	   			} catch (TorrentTitleAlreadyExistsInFeedException e) {
-	   				out.println(e.getMessage());
-	   				response.setStatus(HttpServletResponse.SC_PRECONDITION_FAILED);
-	   			}
-            } else {
-                response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-            }
-      //}
+  	    Gson jsonFactory = new Gson();
+        if (feedId != null && !feedId.isEmpty()) {
+        	String title = request.getParameter("title");
+            String link = request.getParameter("link");
+            String description = request.getParameter("description");
+            String userId = null;
+            boolean shareInFb = request.getParameter("shareInFb").toLowerCase() == "true";
+            
+            try {
+    	        userId = AuthServlet.getCurrentUserId(request);
+   				Feed feed = Feed.find(feedId,userId);
+   				for (Torrent t : feed.getTorrents())
+   				{
+   					if(t.getTitle().equals(title))
+   						throw new TorrentTitleAlreadyExistsInFeedException("Feed already contains a torrent with title "+ title);
+   				}
+   				Torrent newTorrent = new Torrent(title, description, link);
+				feed.getTorrents().add(newTorrent);
+				feed.save();
+				if (shareInFb){
+   					// url: SocialServlet.getAddingUrlFor(newTorrent);
+					//TODO: share in facebook;
+   				}
+				response.setStatus(HttpServletResponse.SC_OK);
+   			} catch (FeedMalformedException | TorrentMalformedException e) {
+   				e.printStackTrace();
+   				out.println(e.getMessage());
+   				out.println(feedId);
+   				out.println(link);
+   				out.println(description);
+   				out.println(userId);
+   				response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+   			} catch (EntityNotFoundException e) {
+   				response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+   			} catch (TorrentTitleAlreadyExistsInFeedException e) {
+   				out.println(e.getMessage());
+   				response.setStatus(HttpServletResponse.SC_PRECONDITION_FAILED);
+   			} catch (NotLoggedUserException e) {
+   				response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+			}
+        } else {
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+        }
         out.close();        
     }
 }
