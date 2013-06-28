@@ -29,6 +29,7 @@ import com.google.appengine.api.datastore.Query;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.tacs13G6.models.exceptions.FeedMalformedException;
+import com.tacs13G6.servlets.RssServlet;
 import com.tacs13G6.utils.Token;
 
 public class Feed {
@@ -132,6 +133,7 @@ public class Feed {
 	final Date pubDate;
 	final String token;
 	final List<Torrent> torrents = new ArrayList<Torrent>();
+	final String rssUrl;
 
 	protected Feed(String title, String link, String description,Date publicationDate, String userId, String token) throws FeedMalformedException {
 		if (title == null || title.isEmpty() || description == null	|| description.isEmpty() || link == null || link.isEmpty())
@@ -145,6 +147,7 @@ public class Feed {
 		this.pubDate = publicationDate;
 		this.userId = userId;
 		this.token = token;
+		this.rssUrl = RssServlet.getRssUrlFor(this);
 	}
 
 	public String getTitle() {

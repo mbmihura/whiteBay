@@ -151,7 +151,7 @@ body {
 					<h2>Private Feed:</h2>
 					<p class="description" style="font-style: italic"></p>
 					<p>
-						Feed rss url: <a class="feedLink">utntcas.appspot.com/rss/23423</a>
+						Feed's rss: <a class="feedLink">utntcas.appspot.com/rss/23423</a>
 					</p>
 					<ul>
 					</ul>
@@ -360,7 +360,7 @@ body {
 									.appendTo("#feedsList").removeClass("template")
 									.addClass("aFeed").fadeIn();
 							feed.find("h2").text(item.title);
-							feed.find(".feedLink").text(item.link);
+							feed.find(".feedLink").text(item.rssUrl).attr("href",item.rssUrl);
 							feed.find(".description").text(item.description);
 							for (var j = 0; j < item.torrents.length; ++j)
 	 						{

@@ -31,7 +31,7 @@ public class RssServlet extends HttpServlet {
      protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     	 PrintWriter out = response.getWriter(); 
       
-         String[] urlParams = UrlParserService.parse(request.getPathInfo(), 2);
+         String[] urlParams = UrlParserService.parse(request.getPathInfo(), 3);
          
          if (urlParams[0] != null && !urlParams[0].isEmpty() && urlParams[1] != null && !urlParams[1].isEmpty())
          {
@@ -68,7 +68,7 @@ public class RssServlet extends HttpServlet {
      public static String getRssUrlFor(Feed feed)
      {
     	 StringBuilder sb = new StringBuilder();
-    	 sb.append('/').append(feed.getUser()).append('/').append(feed.getTitle());
+    	 sb.append("/rss/").append(feed.getUser()).append('/').append(feed.getTitle());
     	 if (feed.getToken() != null)
     		 sb.append('/').append(feed.getToken());
     	 return sb.toString();
