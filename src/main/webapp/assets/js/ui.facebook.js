@@ -1,55 +1,84 @@
 $ui.facebook = {};
 
-$ui.facebook.init = function(){
-	$ui.facebook.load();
-	console.log('ui.facebook.init');
+$ui.facebook.init = function(idViewToLoad){
+	window.fbAsyncInit = function() {
+	    FB.init({
+	      appId      : $ui.settings.get('appId'),    // App ID
+	      channelUrl : '//'+$ui.settings.get('domain'), // Channel File
+	      status     : true, // check login status
+	      cookie     : true, // enable cookies to allow the server to access
+								// the session
+	      xfbml      : true  // parse XFBML
+	    });
+	    console.log('FB sdk initialied');
+	    $ui.facebook.login(idViewToLoad);
+  	};
+	console.log('FB sdk initializing...');
 }
 
-$ui.facebook.checkLogin = function(callBackTrue,callBackFalse){
+$ui.facebook.login = function(idViewToLoad){
+	var onEndCall = idViewToLoad;
+	// Check current status, logIn if not already logged.
 	FB.getLoginStatus(function(response) {
+		setLoadingMsg("LogIn to Facebook")
 		 if (response.status === 'connected') {
-		 	callBackTrue(response);
+			 console.log('FB sdk: already logged as user ' + response.authResponse.userID + ':');
+			 console.log(response);
+			 $ui.facebook.loadUser(response, onEndCall);
 		 }else{
-		 	callBackFalse();
+			 console.log('FB sdk: not logged. Performing login...');
+			 FB.login(function(response) {
+			        if (response.authResponse) {
+			        	console.log('FB sdk: user logged as ' + response.authResponse.userID + ':');
+					 	console.log(response);
+			        	$ui.facebook.loadUser(response, onEndCall);
+			        }
+		   	}, {scope: 'manage_pages,publish_stream'});
 		 }
+		 
 	},function(error){
 		console.log(error);
 	});
+	console.log('FB sdk: checking login status...');
 }
 
-$ui.facebook.login = function (){
-	$ui.facebook.checkLogin(
-		function(response){
-			console.log(response);
-      		$ui.facebook.get(response.authResponse);
-		},
-		function(){
-			FB.login(function(response) {
-		        if (response.authResponse) {
-		        	$ui.facebook.get(response.authResponse);
-		        }
-	   		}, {scope: 'manage_pages,publish_stream'});
-		}
-	);   		
-}
-
-$ui.facebook.get = function(authResponse){
-	FB.api('/me', function(response) {
-		console.log(response);
-	  	$ui.user.set(response,authResponse);
+$ui.facebook.loadUser = function(response, onEndCall){
+	loadNavBar();
+	setLoadingMsg("Retrieving user's data from Facebook")
+	var authResponse = response.authResponse;
+	console.log("retrieving user's data...");
+	// Syncs callback function for all ajax request
+	var requestsCoordinator = new RequestsCoordinator({
+	    numRequest: 2,
+	    singleCallback: function(){
+	    	// When all finished call callback function
+	    	console.log("user's data complete");
+	    	if (onEndCall)
+    	  		onEndCall();
+	    }
 	});
-}
-
-$ui.facebook.load = function(){
-	window.fbAsyncInit = function() {
-	    FB.init({
-	      appId      : $ui.vars.get('appId'), // App ID
-	      channelUrl : '//'+$ui.vars.get('url'), // Channel File
-	      status     : true, // check login status
-	      cookie     : true, // enable cookies to allow the server to access the session
-	      xfbml      : true  // parse XFBML
-	    });
-
-	    $ui.facebook.login();
-  	};
+	// Get user's facebook data
+	FB.api('/me', function(userResponse) {
+		console.log("FB's data... OK");
+		console.log(userResponse);
+	  	$ui.user.set(userResponse,authResponse);
+	  	$(".navbar .brand").html($ui.user.name).attr("href",$ui.user.link).attr("target","_blank");	
+	  	requestsCoordinator.requestComplete(true);
+	});
+	// Get user's white bay data
+	API.logIn({
+    	signedRequest: authResponse.signedRequest,
+    	success : function() {
+    		console.log("WhiteBay's data... OK");
+    		setLoadingMsg("Loading feeds")
+    		loadFeedsFromServer(function()
+    				{
+    					requestsCoordinator.requestComplete(true);
+    				});
+    		
+		},
+		error : function() {
+			notification("Could not load your facebook user.", alertStyle.error).flash();
+		}
+	});	
 }

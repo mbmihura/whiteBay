@@ -88,11 +88,6 @@ public class FeedServlet extends HttpServlet {
    			} catch (FeedMalformedException e) {
    				e.printStackTrace();
    				response.getWriter().println(e.getMessage());
-   				response.getWriter().println("recieved params:");
-   				response.getWriter().println(feedId);
-   				response.getWriter().println(link);
-   				response.getWriter().println(description);
-   				response.getWriter().println(userId);
    				response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
    			} catch (NotLoggedUserException e) {
    				response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -117,7 +112,6 @@ public class FeedServlet extends HttpServlet {
             String link = request.getParameter("link");
             String description = request.getParameter("description");
             String userId = null;
-            boolean shareInFb = request.getParameter("shareInFb").toLowerCase() == "true";
             
             try {
     	        userId = AuthServlet.getCurrentUserId(request);
@@ -130,12 +124,8 @@ public class FeedServlet extends HttpServlet {
    				Torrent newTorrent = new Torrent(title, description, link);
 				feed.getTorrents().add(newTorrent);
 				feed.save();
-				if (shareInFb){
-   					// url: SocialServlet.getAddingUrlFor(newTorrent);
-					//TODO: share in facebook;
-   				}
 				response.setStatus(HttpServletResponse.SC_OK);
-   			} catch (FeedMalformedException | TorrentMalformedException e) {
+   			} catch (FeedMalformedException e) {
    				e.printStackTrace();
    				out.println(e.getMessage());
    				out.println(feedId);
@@ -150,6 +140,10 @@ public class FeedServlet extends HttpServlet {
    				response.setStatus(HttpServletResponse.SC_PRECONDITION_FAILED);
    			} catch (NotLoggedUserException e) {
    				response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+			} catch (TorrentMalformedException e) {
+				e.printStackTrace();
+				response.getWriter().println(e.getMessage());
+   				response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			}
         } else {
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);

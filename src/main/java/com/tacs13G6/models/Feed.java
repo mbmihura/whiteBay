@@ -137,10 +137,11 @@ public class Feed {
 
 	protected Feed(String title, String link, String description,Date publicationDate, String userId, String token) throws FeedMalformedException {
 		if (title == null || title.isEmpty() || description == null	|| description.isEmpty() || link == null || link.isEmpty())
-			throw new FeedMalformedException("Title, description and link are requiered: " + title + description + link);
+			throw new FeedMalformedException("Neither title, link and description may be empty.");
+		
 		Pattern p = Pattern.compile("^[A-Za-z0-9_]+$");
 		if (!p.matcher(title).find())
-			throw new FeedMalformedException("Title should be alphanumeric");
+			throw new FeedMalformedException("Title should be alphanumeric.");
 		this.title = title;
 		this.link = link;
 		this.description = description;

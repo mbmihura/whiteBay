@@ -104,19 +104,12 @@ body {
 	<div class="container">
 		<div class="masthead">
 			<h3 class="muted">White Bay Social Torrents Feeds</h3>
-			<!-- NNEWWW Navigation Bar -->
-			<div class="navbar">
+			<!-- Navigation Bar -->
+			<div class="navbar" style="display:none">
 				<div class="navbar-inner">
-					<!-- Responsive Navbar Part 1: Button for triggering responsive navbar (not covered in tutorial). Include responsive CSS to utilize. -->
-					<button type="button" class="btn btn-navbar" data-toggle="collapse"
-						data-target=".nav-collapse">
-						<span class="icon-bar"></span> <span class="icon-bar"></span> <span
-							class="icon-bar"></span>
-					</button>
 					<a class="brand" id="userNav" style="border-right: 1px solid rgba(0, 0, 0, .1);"
-						href="javascript:$ui.facebook.login();">LogIn</a>
-					<!-- Responsive Navbar Part 2: Place all navbar contents you want collapsed withing .navbar-collapse.collapse. -->
-					<div class="nav-collapse collapse">
+						href="javascript:$ui.facebook.login();">loading user data</a>
+
 						<ul id="mainNav" class="nav">
 							<li data-showview="#userFeedsView" class="active"><a
 								href="#">Your feeds</a></li>
@@ -124,11 +117,7 @@ body {
 							<li data-showview="#addTorrentView"><a href="#">Add
 									torrent</a></li>
 						</ul>
-						
-					</div>
-					<!--/.nav-collapse -->
 				</div>
-				<!-- /.navbar-inner -->
 			</div>
 		</div>
 		<div id="mainAlert" class="alert text-center" style="display: none">
@@ -136,10 +125,12 @@ body {
 			<span></span>
 		</div>
 		<!-- Add Auth View -->
-		<div id="authView" style="display: none">Auth option: signin
-			with fb, allow app</div>
+		<div id="loadingView" class="jumbotron">
+  			<img src="assets/img/loading_animation.gif" style="width: 30px;">			
+				<p class="lead">Connecting with facebook</p>
+			</div>
 		<!-- User's Feeds List -->
-		<div id="userFeedsView">
+		<div id="userFeedsView" style="display: none">
 			<div id="noFeedMsg" class="jumbotron" style="display: none">
 				<h1>Create a Feed!</h1>
 				<p class="lead">You have no feed yet. Create a feed to share it
@@ -156,7 +147,7 @@ body {
 					<ul>
 					</ul>
 					<p>
-						<a class="btn" onclick="shareFeedInFb()" href="#">Share in
+						<a class="btn shareFeed" href="#">Share in
 							Facebook! &raquo;</a>
 					</p>
 				</div>
@@ -254,14 +245,11 @@ body {
 	<!-- javascript -->
 	<script src="/assets/js/jquery-2.0.2.min.js"></script>
 	<script src="/assets/js/bootstrap.js"></script>
-	<script src="/assets/js/ui.js"></script>
   	<script src="/assets/js/ui.vars.js"></script>
  	<script src="/assets/js/ui.facebook.js"></script>
-  	<script src="/assets/js/ui.user.js"></script>
-  	<script src="/assets/js/ui.panel.js"></script>
+ 	<script src="/assets/js/requestsCoordinator.js"></script>
 	<script src="/assets/js/bootstrapExtension.js"></script>
 	<script src="/assets/js/ApiREST.js"></script>
-
   	<script type="text/javascript">
 	        
 	        
@@ -276,45 +264,44 @@ body {
 	   }(document));
 	 
 		$(document).ready(function() {
-			//Init Nav bar behavior
+			$ui.settings.set('appId','<%= ApplicationConfig.client_id%>');
+			$ui.settings.set('domain','http://utntacs.appspot.com');
+			$ui.settings.set('appUrl','http://apps.facebook.com/captainjacksgroupsix');
+
+		<%//TODO excape char avoid XSS
+			String title = request.getParameter("title");
+			String link = request.getParameter("link");
+			String description = request.getParameter("desc");
+			String idViewToLoad = "#userFeedsView";
+			if (title != null & link != null)
+			{
+				idViewToLoad = "#addTorrentView";
+				title = "'"+title+"'";
+				link = "'"+link+"'";
+				description = (description == null)? "null":"'" + description + "'";
+				%>
+				// If user comes from a share torrent link
+				var f = function loadAppDisplayingAddTorrentView(title,url,description) {
+					if (title != null & url != null) {
+						$("#addTorrentTitleInput").val(title);
+						$("#addTorrentLinkInput").val(url);
+						if (description != null)
+							$("#addTorrentDescTxtarea").val(description);
+					}
+				};
+				f(<%=title%>,<%=link%>,<%=description%>);
+		<%	} %>
+			$ui.init(function(){showView("<%=idViewToLoad %>");});
+		});
+		
+		function loadNavBar(){
 			$("#mainNav").children().each(function() {
 				$(this).click(function() {
 					showView($(this).attr('data-showview'));
 				});
-			});
-			$ui.vars.init();
-	        $ui.vars.set('appId','<%= ApplicationConfig.client_id%>');
-	        $ui.vars.set('url','http://utntacs.appspot.com/');
-            $ui.facebook.init();
-	        $ui.panel.init();
-
-			updateFeedList();
-			// If user comes from a share torrent link
-			var f = function loadAppDisplayingAddTorrentView(title,url,description) {
-				if (title != null, url != null) {
-					$("#addTorrentTitleInput").val(title);
-					$("#addTorrentLinkInput").val(url);
-					if (description != null)
-						$("#addTorrentDescTxtarea").val(description);
-					if (true/*TODO: userLogged*/){
-					}else{
-						showView("#addTorrentView");
-					}
-				}
-			};
-		<%//TODO excape char avoid XSS
-			String title = request.getParameter("title");
-			String url = request.getParameter("url");
-			String description = request.getParameter("desc");
-			if (title != null & url != null)
-			{
-				title = "'"+title+"'";
-				url = "'"+url+"'";
-				description = (description == null)? "null":"'" + description + "'";
-				out.println("f(" + title + ","+url+","+description+");");
-			}
-				%>
-		});
+			});	
+			$(".navbar").fadeIn();
+		}
 
 		function notification(msg, type) {
 			$('#mainAlert > span').text(msg)
@@ -331,16 +318,21 @@ body {
 			$('[data-showview="'+viewId+'"]').addClass('active');
 			
 			// Show selected view:
+			$("#loadingView").hide();
 			$("#userFeedsView").hide();
 			$("#addFeedView").hide();
 			$("#addTorrentView").hide();
 			$(viewId).fadeIn();
 		}
+		
+		function setLoadingMsg(msg) {
+			$("#loadingView .lead").text(msg);
+		}
 
 		//---- Views sprecific functions ----
-		var feedsList;
 		// All feed view:
-		function updateFeedList() {
+		var feedsList = {};		
+		function loadFeedsFromServer(callback) {
 			API.getFeeds({
 				error : function() {
 					notification(
@@ -350,67 +342,92 @@ body {
 				success : function(response) {
 					$("#feedsList > .aFeed").remove()
 					feedsList = JSON.parse(response);
-					//TODO: load feeds:
-					if (feedsList.length > 0)
-					{
-						$("#noFeedMsg").hide();
-						$("#feedsList").show();
-						$.each(feedsList, function(i, item) {
-							var feed = $("#feedsList > .template").clone()
-									.appendTo("#feedsList").removeClass("template")
-									.addClass("aFeed").fadeIn();
-							feed.find("h2").text(item.title);
-							feed.find(".feedLink").text(item.rssUrl).attr("href",item.rssUrl);
-							feed.find(".description").text(item.description);
-							for (var j = 0; j < item.torrents.length; ++j)
-	 						{
-	 							feed.find("ul").html(feed.find("ul").html() + '<li><a href="'+item.torrents[j].link+'">'+item.torrents[j].title+'</a></li>');
-	 						}
-							$('#addTorrentFeedSelect').html($('#addTorrentFeedSelect').html() + "<option value='"+item.title+"'>"+item.title+"</option>");
-						});
-					} else {
-						$("#feedsList").hide();
-						$("#noFeedMsg").show();
-					}
+					refreshFeedList();
+					if (callback)
+						callback();
 					notification().hide();
 				}
 			});
 		}
-
-		function shareFeedInFb()
+		function refreshFeedList() {
+			// If there are feed, update de list UI to show them
+			if (feedsList.length > 0)
+			{
+				$("#noFeedMsg").hide();
+				$(".aFeed").remove()
+				$.each(feedsList, function(i, item) {
+					var feed = $("#feedsList > .template").clone()
+							.appendTo("#feedsList").removeClass("template")
+							.addClass("aFeed").fadeIn();
+					feed.find("h2").text(item.title);
+					feed.find(".feedLink").text($ui.settings.get('domain') + item.rssUrl).attr("href",$ui.settings.get('domain') + item.rssUrl);
+					feed.find(".description").text(item.description);
+					feed.find(".shareFeed").attr('data-feed-id', item.title);
+					feed.find(".shareFeed").click(function() {
+						shareFeedInFb($(this).attr('data-feed-id'))
+						});
+					for (var j = 0; j < item.torrents.length; ++j)
+						{
+							feed.find("ul").html(feed.find("ul").html() + '<li><a href="'+item.torrents[j].link+'">'+item.torrents[j].title+'</a></li>');
+						}
+					$('#addTorrentFeedSelect').html($('#addTorrentFeedSelect').html() + "<option value='"+item.title+"'>"+item.title+"</option>");
+				});
+				$("#feedsList").show();
+			} else {
+				$("#feedsList").hide();
+				$("#noFeedMsg").show();
+			}
+		}
+		function shareFeedInFb(feedTitle)
 		{	
-			//TODO: adaptar a publicacion en fb usando js.
-			//Posible cient-side vaidations
-			var feed = feedsList[$("#addTorrentFeedSelect").val()];
-			var result = API.shareFeed({
-				feed: feed,
-				error: function() { notification("Feed couldn't be share on facebook!",alertStyle.error).flash(); },
-				success: function() { 
-					notification(fee + " was shared on our facebook!",alertStyle.success).flash();
-					showView("#userFeedsView");
-				}
-			});	
+			$.each(feedsList, function(i, f) { 
+				if(f.title == feedTitle) {
+					//TODO: adaptar a publicacion en fb usando js.
+					//Posible cient-side vaidations
+					var result = API.shareFeed({
+						feed: f,
+						error: function() { notification("Feed couldn't be share on facebook!",alertStyle.error).flash(); },
+						success: function() { 
+							notification(f.title + " was shared on our facebook!",alertStyle.success).flash();
+						}
+					});	
+				} 
+			});
 		}
 		
 		// Create feed view:
 		function createFeed() {
 			//Posible cient-side vaidations
-			API.createFeed({
-				feed : {
+			var newFeed = {
 					title : $("#feedTitleInput").val(),
 					link : $("#feedLinkInput").val(),
 					description : $("#feedDescInput").val()
-				},
-				error : function() {
-					notification("Feed couldn't be created.", alertStyle.error)
-							.flash();
-				},
-				success : function() {
-					notification("Feed Created!", alertStyle.success).flash();
-					up
-					createFeedResetAndHideForm();
-				}
+				};
+			var titleAlreadyUser = false;
+			$.each(feedsList, function (i, elem) {
+				titleAlreadyUser = titleAlreadyUser || elem.title == newFeed.title;
 			});
+			if (titleAlreadyUser)
+				notification("Feed already has a that title. Select another title.", alertStyle.warning).flash();
+			else
+				API.createFeed({
+					feed: newFeed,
+					error: function(xhr) {
+						if (xhr.status == 400)
+							notification(xhr.responseText, alertStyle.warning)
+								.flash();
+						else
+							notification("Feed couldn't be created.", alertStyle.error)
+							.flash();
+					},
+					success: function() {
+						notification("Feed Created!", alertStyle.success).flash();
+						newFeed.torrents = [];
+						feedsList.push(newFeed);
+						refreshFeedList();
+						createFeedResetAndHideForm();
+					}
+				});
 		}
 
 		function createFeedResetAndHideForm() {
@@ -423,24 +440,46 @@ body {
 		// Add Torrents view:
 		function addTorrent() {
 			//Posible cient-side vaidations
+			
 			var feed = $("#addTorrentFeedSelect").val();
+			var newTorrent = {
+				title : $("#addTorrentTitleInput").val(),
+				link : $("#addTorrentLinkInput").val(),
+				description : $("#addTorrentDescTxtarea").val(),
+			};
 			var result = API.addTorrent({
 				feed : feed,
-				torrent : {
-					title : $("#addTorrentTitleInput").val(),
-					link : $("#addTorrentLinkInput").val(),
-					description : $("#addTorrentDescTxtarea").val(),
-					shareInFb : $("#addTorrentShareInFb").is(":checked")
-				},
-				error : function() {
-					notification("Torrent couldn't be save!", alertStyle.error)
+				torrent : newTorrent,
+				error : function(xhr) {
+					if (xhr.status == 400)
+						notification(xhr.responseText, alertStyle.warning)
 							.flash();
+					else if (xhr.status == 404)
+						notification("Select a feed from the list where to add the torrent.", alertStyle.warning)
+						.flash();
+					else
+						notification("Torrent couldn't be save!", alertStyle.error)
+						.flash();
+					
 				},
 				success : function() {
 					notification("Torrent added to " + feed + "!",alertStyle.success).flash();
+					$.each(feedsList, function(i, f) {
+					    if (f.title == feed) {
+					        f.torrents.push(newTorrent)
+					        return;
+					    }
+					});
+					refreshFeedList();
 					addTorrentResetAndHideForm();
 				}
 			});
+			if ($("#addTorrentShareInFb").is(":checked"))
+			{
+				API.shareTorrent({
+					torrent: newTorrent
+				});
+			}
 		}
 
 		function addTorrentResetAndHideForm() {
